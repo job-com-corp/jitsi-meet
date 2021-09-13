@@ -15,7 +15,7 @@ import {
 } from '../../react/features/base/conference';
 import { parseJWTFromURLParams } from '../../react/features/base/jwt';
 import { JitsiRecordingConstants } from '../../react/features/base/lib-jitsi-meet';
-import { pinParticipant } from '../../react/features/base/participants';
+import { pinParticipant, kickParticipant } from '../../react/features/base/participants';
 import {
     processExternalDeviceRequest
 } from '../../react/features/device-selection/functions';
@@ -333,6 +333,9 @@ function initCommands() {
             } else {
                 logger.error('No recording or streaming session found');
             }
+        },
+        'kick-participant': participantId => {
+            APP.store.dispatch(kickParticipant(participantId));
         }
     };
     transport.on('event', ({ data, name }) => {

@@ -34,6 +34,7 @@ const commands = {
     email: 'email',
     toggleLobby: 'toggle-lobby',
     hangup: 'video-hangup',
+    kickParticipant: 'kick-participant',
     muteEveryone: 'mute-everyone',
     password: 'password',
     pinParticipant: 'pin-participant',
