@@ -63,8 +63,6 @@ import { getJitsiMeetTransport } from '../transport';
 
 import { API_ID, ENDPOINT_TEXT_MESSAGE_NAME } from './constants';
 
-import { getLocalParticipant } from '../../react/features/base/participants';
-
 import i18next from 'i18next';
 
 const logger = Logger.getLogger(__filename);
