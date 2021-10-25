@@ -112,7 +112,13 @@ UI.start = function() {
         }
     }
 
-    if (config.iAmRecorder) {
+    if (interfaceConfig.hideNotifications) {
+        APP.store.dispatch(setNotificationsEnabled(false));
+    }
+
+    if (interfaceConfig.filmStripOnly) {
+        $('body').addClass('filmstrip-only');
+    } else if (config.iAmRecorder) {
         // in case of iAmSipGateway keep local video visible
         if (!config.iAmSipGateway) {
             APP.store.dispatch(setNotificationsEnabled(false));

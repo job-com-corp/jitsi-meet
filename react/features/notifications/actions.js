@@ -19,6 +19,11 @@ import {
     SILENT_JOIN_THRESHOLD
 } from './constants';
 
+import { i18next } from '../base/i18n';
+
+declare var APP: Object;
+declare var interfaceConfig: Object;
+
 /**
  * Clears (removes) all the notifications.
  *
@@ -85,6 +90,16 @@ export function setNotificationsEnabled(enabled: boolean) {
  * @returns {Object}
  */
 export function showErrorNotification(props: Object) {
+    if (typeof APP !== undefined) {
+        const notificationProps = {
+            type: props.appearance || 'default',
+            title: props.title || i18next.t(props.titleKey, props.titleArguments),
+            description: props.description || i18next.t(props.descriptionKey, props.descriptionArguments)
+        }
+
+        APP.API.notifyExternal(notificationProps);
+    }
+    
     return showNotification({
         ...props,
         appearance: NOTIFICATION_TYPE.ERROR

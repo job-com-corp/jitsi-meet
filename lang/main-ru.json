@@ -355,7 +355,7 @@
         "answer": "Ответ",
         "audioCallTitle": "Входящий звонок",
         "decline": "Отклонить",
-        "productLabel": "из Jitsi Meet",
+        "productLabel": "из TeamAI",
         "videoCallTitle": "Входящий видеозвонок"
     },
     "info": {
@@ -544,7 +544,7 @@
         "newDeviceAction": "Использовать",
         "newDeviceAudioTitle": "Обнаружено новое аудиоустройство",
         "newDeviceCameraTitle": "Обнаружена новая камера",
-        "oldElectronClientDescription1": "Похоже, вы используете старую версию клиента Jitsi Meet, которая имеет известные уязвимости в системе безопасности. Убедитесь, что вы обновили до нашей ",
+        "oldElectronClientDescription1": "Похоже, вы используете старую версию клиента TeamAI, которая имеет известные уязвимости в системе безопасности. Убедитесь, что вы обновили до нашей ",
         "oldElectronClientDescription2": "последней версии",
         "oldElectronClientDescription3": " сейчас!",
         "passwordRemovedRemotely": "$t(lockRoomPasswordUppercase) удален другим участником.",
@@ -914,8 +914,8 @@
         "getHelp": "Справка",
         "go": "ОК",
         "goSmall": "ОК",
-        "headerTitle":"Сервер видеоконференцсвязи Jitsi Meet",
-        "headerSubtitle":"Защищенная высококачественная видеосвязь",
+        "headerTitle": "Сервер видеоконференцсвязи TeamAI",
+        "headerSubtitle": "Защищенная высококачественная видеосвязь",
         "info": "Инфо",
         "join": "СОЗДАТЬ / ПРИСОЕДИНИТЬСЯ",
         "moderatedMessage": "Или заранее <a href=\"{{url}}\" rel=\"noopener noreferrer\" target=\"_blank\">зарезервируйте URL-адрес встречи</a>, где вы будете единственным модератором.",

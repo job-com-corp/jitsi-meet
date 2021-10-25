@@ -23,6 +23,9 @@ end
 
 log("info", "Starting speakerstats for %s", muc_component_host);
 
+local requestURL = module:get_option_string("speakerstats_post_url"); 
+log("info", "Post speakerstats url: %s", requestURL);
+
 local function is_admin(jid)
     return um_is_admin(jid, module.host);
 end
@@ -149,7 +152,7 @@ function occupant_joined(event)
             for jid, values in pairs(room.speakerStats) do
                 -- skip reporting those without a nick('dominantSpeakerId')
                 -- and skip focus if sneaked into the table
-                if values.nick ~= nil and values.nick ~= 'focus' then
+                if values.nick ~= nil and values.nick ~= 'focus' and values.nick ~= 'recorder' then
                     local totalDominantSpeakerTime = values.totalDominantSpeakerTime;
                     if totalDominantSpeakerTime > 0 or room:get_occupant_jid(jid) == nil then
                         -- before sending we need to calculate current dominant speaker state

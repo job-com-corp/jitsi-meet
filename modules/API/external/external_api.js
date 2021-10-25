@@ -115,7 +115,8 @@ const events = {
     'subject-change': 'subjectChange',
     'suspend-detected': 'suspendDetected',
     'tile-view-changed': 'tileViewChanged',
-    'toolbar-button-clicked': 'toolbarButtonClicked'
+    'toolbar-button-clicked': 'toolbarButtonClicked',
+    'notification-raised': 'notificationRaised'
 };
 
 /**
@@ -1134,5 +1135,17 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
      */
     stopRecording(mode) {
         this.executeCommand('startRecording', mode);
+    }
+
+    /**
+     * Returns conference speaker stats.
+     * 
+     * @returns {Promise<Object>} Resolves with speaker stats and rejects on failure
+     */
+    getSpeakerStats() {
+        console.log("CALL external_api - getSpeakerStats");
+        return this._transport.sendRequest({
+            name: 'get-speaker-stats'
+        });
     }
 }

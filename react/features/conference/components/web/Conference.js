@@ -207,6 +207,15 @@ class Conference extends AbstractConference<Props, *> {
      */
     render() {
         const {
+            // XXX The character casing of the name filmStripOnly utilized by
+            // interfaceConfig is obsolete but legacy support is required.
+            filmStripOnly: filmstripOnly,
+            hideToolbar: hideToolbar,
+            hideNotifications: hideNotifications,
+            hideChat: hideChat
+        } = interfaceConfig;
+
+        const {
             _isParticipantsPaneVisible,
             _layoutClassName,
             _showLobby,
@@ -236,10 +245,10 @@ class Conference extends AbstractConference<Props, *> {
                         <Filmstrip />
                     </div>
 
-                    { _showPrejoin || _showLobby || <Toolbox showDominantSpeakerName = { true } /> }
-                    <Chat />
+                    { !hideToolbar && (_showPrejoin || _showLobby || <Toolbox showDominantSpeakerName = { true } />)}
+                    { !hideChat && (filmstripOnly || <Chat />)}
 
-                    { this.renderNotificationsContainer() }
+                    { !hideNotifications && this.renderNotificationsContainer()}
 
                     <CalleeInfoContainer />
 

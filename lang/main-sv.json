@@ -1,4 +1,3 @@
-
 {
     "addPeople": {
         "add": "Bjud in",
@@ -413,7 +412,7 @@
         "answer": "Svara",
         "audioCallTitle": "Inkommande samtal",
         "decline": "Avvisa",
-        "productLabel": "från Jitsi Meet",
+        "productLabel": "från TeamAI",
         "videoCallTitle": "Inkommande videosamtal"
     },
     "info": {

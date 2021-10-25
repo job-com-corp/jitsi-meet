@@ -308,7 +308,7 @@
         "WaitForHostMsgWOk": "Конференція <b>{{room}}</b> ще не почалася. Якщо ви є організатором, будь ласка, клацніть на кнопку \"Гаразд\" для авторизації або дочекайтеся організатора.",
         "WaitingForHost": "Чекаємо на організатора...",
         "Yes": "Так",
-        "yourEntireScreen": "На повний екран"  ,      
+        "yourEntireScreen": "На повний екран",
         "add": "Добавити",
         "copied": "Скопійовано",
         "e2eeLabel": "E2EE ключ",
@@ -348,7 +348,7 @@
         "answer": "Відповідь",
         "audioCallTitle": "Вхідний виклик",
         "decline": "Відхилити",
-        "productLabel": "з Jitsi Meet",
+        "productLabel": "з TeamAI",
         "videoCallTitle": "Вхідний відеовиклик"
     },
     "info": {
@@ -510,7 +510,7 @@
     "me": "я",
     "notify": {
         "OldElectronAPPTitle": "Уразливість в системі безпеки!",
-        "oldElectronClientDescription1": "Схоже, ви використовуєте стару версію клієнта Jitsi Meet, яка має відомі уразливості в системі безпеки. Переконайтеся, що ви оновились до нашої",
+        "oldElectronClientDescription1": "Схоже, ви використовуєте стару версію клієнта TeamAI, яка має відомі уразливості в системі безпеки. Переконайтеся, що ви оновились до нашої",
         "oldElectronClientDescription2": "останньої версії",
         "oldElectronClientDescription3": " зараз!",
         "connectedOneMember": "{{name}} приєднався до конференції",

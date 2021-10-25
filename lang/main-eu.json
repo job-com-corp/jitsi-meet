@@ -36,7 +36,9 @@
         "speaker": "Bozgorailua",
         "none": "Ez dago audio-gailurik erabilgarri"
     },
-    "audioOnly": { "audioOnly": "Banda-zabalera txikia" },
+    "audioOnly": {
+        "audioOnly": "Banda-zabalera txikia"
+    },
     "calendarSync": {
         "addMeetingURL": "Bileraren esteka gehitu",
         "confirmAddLink": "Jitsi esteka gertaera honetara gehitu nahi duzu?",
@@ -82,7 +84,9 @@
         "dontShowAgain": "Ez erakutsi hau berriro",
         "close": "Itxi"
     },
-    "connectingOverlay": { "joiningRoom": "Zure bilerara konektatzen\u2026" },
+    "connectingOverlay": {
+        "joiningRoom": "Zure bilerara konektatzen\u2026"
+    },
     "connection": {
         "ATTACHED": "Atxikituta",
         "AUTHENTICATING": "Autentifikatzea",
@@ -167,7 +171,9 @@
         "testAudio": "Erreproduzitu proba-soinua"
     },
     "dialog": {
-        "accessibilityLabel": { "liveStreaming": "Zuzeneko Erreprodukzioa" },
+        "accessibilityLabel": {
+            "liveStreaming": "Zuzeneko Erreprodukzioa"
+        },
         "add": "Add",
         "allow": "Baimendu",
         "alreadySharedVideoMsg": "Beste parte-hartzaile batek jada bideo bat partekatzen ari da. Konferentzia honek aldi berean bideo bakarra partekatzen uzten du.",
@@ -326,12 +332,18 @@
         "remoteUserControls": "{{username}} parte-hartzailearen urruneko kontrolak",
         "localUserControls": "Erabiltzaile lokalaren kontrolak"
     },
-    "dialOut": { "statusMessage": "{{status}} dago" },
-    "documentSharing": { "title": "Partekatutako dokumentua" },
+    "dialOut": {
+        "statusMessage": "{{status}} dago"
+    },
+    "documentSharing": {
+        "title": "Partekatutako dokumentua"
+    },
     "e2ee": {
         "labelToolTip": "Bilera honetako audio eta bideoa puntutik puntura zifratuta daude."
     },
-    "embedMeeting": { "title": "Bilera hau txertatu" },
+    "embedMeeting": {
+        "title": "Bilera hau txertatu"
+    },
     "virtualBackground": {
         "apply": "Aplikatu",
         "title": "Atzeko plano birtualak",
@@ -368,7 +380,7 @@
         "answer": "Erantzun",
         "audioCallTitle": "Sarrerako deia",
         "decline": "Baztertu",
-        "productLabel": "Jitsi Meet-etik",
+        "productLabel": "TeamAI-etik",
         "videoCallTitle": "Bideo-deia sartzen"
     },
     "info": {
@@ -536,7 +548,7 @@
         "newDeviceAudioTitle": "Audio-gailu berria hauteman da",
         "newDeviceAction": "Erabilera",
         "OldElectronAPPTitle": "Zaharkitutako aplikazioa",
-        "oldElectronClientDescription1": "Segurtasun arazoak dituen Jitsi Meet aplikazioa erabiltzen arai zara. Eguneratu ezazu",
+        "oldElectronClientDescription1": "Segurtasun arazoak dituen TeamAI aplikazioa erabiltzen arai zara. Eguneratu ezazu",
         "oldElectronClientDescription2": "bertsio berriagora",
         "oldElectronClientDescription3": "ORAIN!",
         "groupTitle": "Jakinarazpenak"
@@ -666,7 +678,9 @@
         "unavailable": "Atx! {{serviceName}} ez dago eskuragarri. Arazoa konpontzeko lanean gabiltza. Saiatu berriz beranduago.",
         "unavailableTitle": "Grabazioa ez dago eskuragarri"
     },
-    "sectionList": { "pullToRefresh": "Eguneratu" },
+    "sectionList": {
+        "pullToRefresh": "Eguneratu"
+    },
     "security": {
         "about": "Zure bilerari $t(lockRoomPassword) gehitu diezaiokezu. Parte-hartzaileek $t(lockRoomPassword) idatzi beharko dute bilerara sartu aurretik.",
         "aboutReadOnly": "Moderatzaileak $t(lockRoomPassword) gehitu diezaiokete bilerari. Parte-hartzaileek $t(lockRoomPassword) idatzi beharko dute bilerara sartu aurretik.",
@@ -938,7 +952,10 @@
             "roomname": "Sartu gelaren izena"
         },
         "appDescription": "Zure lantalde guztiarentzat bideodeiak. {{app}} aplikazio zifratu eta segurua da, eta gainera %100 software librea, doakoa, denbora mugarik gabe eta konturik sortu gabe erabiltzekoa.",
-        "audioVideoSwitch": { "audio": "Ahotsa", "video": "Bideoa" },
+        "audioVideoSwitch": {
+            "audio": "Ahotsa",
+            "video": "Bideoa"
+        },
         "calendar": "Egutegia",
         "connectCalendarButton": "Konektatu zure egutegia",
         "connectCalendarText": "Konektatu egutegia zure bilera guztiak {{app}}en ikusteko. Gainera, gehitu {{provider}} bilerak zure egutegian eta hasi klik bakar batekin.",
@@ -946,7 +963,7 @@
         "getHelp": "Lortu laguntza",
         "go": "JOAN",
         "goSmall": "JOAN",
-        "headerTitle": "Jitsi Meet",
+        "headerTitle": "TeamAI",
         "headerSubtitle": "Secure and high quality meetings",
         "info": "Informazioa",
         "join": "SORTU / SARTU",
@@ -980,7 +997,9 @@
         "button": "Gonbidatu beste batzuk",
         "youAreAlone": "Bileran dagoen bakarra zara"
     },
-    "helpView": { "header": "Laguntza gunea" },
+    "helpView": {
+        "header": "Laguntza gunea"
+    },
     "lobby": {
         "admit": "Onartu",
         "admitAll": "Onartu guztiak",
