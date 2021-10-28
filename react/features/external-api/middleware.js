@@ -90,6 +90,9 @@ MiddlewareRegistry.register(store => next => action => {
         const { room } = state['features/base/conference'];
         const { loadableAvatarUrl, name, id } = getLocalParticipant(state);
 
+        const activeSession = getActiveSession(state, JitsiRecordingConstants.mode.FILE);
+        console.log("ACTIVE SESSION", activeSession);
+
         const isRecordingOn = Boolean(activeSession);
         const recordingStatusString = isRecordingOn ? 
             activeSession.status === JitsiRecordingConstants.status.ON ? "ON" : 
