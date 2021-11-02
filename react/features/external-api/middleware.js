@@ -88,7 +88,9 @@ MiddlewareRegistry.register(store => next => action => {
     case CONFERENCE_JOINED: {
         const state = store.getState();
         const { room } = state['features/base/conference'];
-        const { loadableAvatarUrl, name, id } = getLocalParticipant(state);
+        const localParticipant = getLocalParticipant(state);
+        console.log("LOCAL PARTICIPANT", localParticipant);
+        const { loadableAvatarUrl, name, id, email } = localParticipant;
 
         const activeSession = getActiveSession(state, JitsiRecordingConstants.mode.FILE);
         console.log("ACTIVE SESSION", activeSession);
@@ -104,6 +106,7 @@ MiddlewareRegistry.register(store => next => action => {
             id,
             {
                 displayName: name,
+                email,
                 formattedDisplayName: appendSuffix(
                     name,
                     interfaceConfig.DEFAULT_LOCAL_DISPLAY_NAME
@@ -161,13 +164,14 @@ MiddlewareRegistry.register(store => next => action => {
 
     case PARTICIPANT_JOINED: {
         const { participant } = action;
-        const { id, local, name } = participant;
+        const { id, local, name, email } = participant;
 
         // The version of external api outside of middleware did not emit
         // the local participant being created.
         if (!local) {
             APP.API.notifyUserJoined(id, {
                 displayName: name,
+                email,
                 formattedDisplayName: appendSuffix(
                     name || interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME)
             });
