@@ -58,13 +58,13 @@
     }
 
     &_overlay {
-        color: $primaryButtonColor;
-        background-color: $overlayButtonBg;
-        border-radius: 2px;
+        color: #fff;
+        background: $overlayButtonBg;
+        border-radius: 12px;
         border: none;
 
         &:hover {
-            background-color: $primaryButtonBackground;
+            background: $overlayButtonBg;
             border: none;
         }
     }
