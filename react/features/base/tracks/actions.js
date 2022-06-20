@@ -523,7 +523,6 @@ export function trackMutedChanged(track) {
 }
 
 /**
-<<<<<<< HEAD
  * Create an action for when a track's muted state change action has failed. This could happen because of
  * {@code getUserMedia} errors during unmute or replace track errors at the peerconnection level.
  *
