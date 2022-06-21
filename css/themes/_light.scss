@@ -35,13 +35,13 @@ $primaryButtonFontWeight: 400;
 
 $buttonShadowColor: #192d4f;
 
-$overlayButtonBg: #0074E0;
+$overlayButtonBg: linear-gradient(152.66deg, #7367F0 1.52%, #CE9FFC 97.13%);
 
 /**
 * Color variables
 **/
-$defaultBackground: #474747;
-$reloadProgressBarBg: #0074E0;
+$defaultBackground: #414249;
+$reloadProgressBarBg: #7367F0;
 
 /**
  * Dialog colors
@@ -56,7 +56,7 @@ $dialogErrorText: #344563;
 /**
 * Inlay colors
 **/
-$inlayColorBg: lighten($defaultBackground, 20%);
+$inlayColorBg: linear-gradient(0deg, rgba(242, 153, 74, 0.1), rgba(242, 153, 74, 0.1)), #FFFFFF;
 $inlayBorderColor: lighten($baseLight, 10%);
 
 // Main controls
