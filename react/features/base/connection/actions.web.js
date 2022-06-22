@@ -30,7 +30,9 @@ export function connect() {
         return dispatch(configureInitialDevices()).then(
             () => APP.conference.init({
                 roomName: room
-            }).catch(error => {
+            })
+            .then(() => {APP.API.notifyInitializationDone()})
+            .catch(error => {
                 APP.API.notifyConferenceLeft(APP.conference.roomName);
                 logger.error(error);
             }));

@@ -1254,6 +1254,17 @@ class API {
     }
 
     /**
+     * Notify external application (if API is enabled) that jitsi has initialized.
+     *
+     * @returns {void}
+     */
+    notifyInitializationDone() {
+        this._sendEvent({
+            name: 'initialized',
+        });
+    }
+
+    /**
      * Notify external application that the data channel has been opened.
      *
      * @returns {void}
