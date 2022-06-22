@@ -3,8 +3,11 @@
 **/
 
 .popupmenu {
-    background-color: $menuBG;
-    border-radius: 3px;
+    background: $menuBG;
+    .popupmenu {
+        background: transparent;
+    }
+    border-radius: 20px;
     list-style-type: none;
     min-width: 150px;
     text-align: left;
@@ -23,15 +26,14 @@
         box-sizing: border-box;
         text-decoration: none;
         height: 100%;
-        font-size: 9pt;
+        font-size: 14px;
         width: 100%;
         cursor: pointer;
         padding: 0 5px;
         color: $popupMenuColor;
 
         &:hover {
-            background-color: $popupMenuHoverBackground;
-            color: $popupMenuHoverColor;
+            font-weight: bold;
         }
 
         &.disabled {
@@ -99,6 +101,10 @@
 
         > * {
             @include absoluteAligning();
+        }
+        &:empty {
+           visibility: hidden;
+           min-width: 0;
         }
     }
 

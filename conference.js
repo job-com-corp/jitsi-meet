@@ -652,10 +652,13 @@ export default {
             const isGranted = (type) => tracks.some(track => track.type === type);
 
             APP.store.dispatch(toggleSlowGUMOverlay(false));
-            APP.store.dispatch(notifyMediaPermissionsGranted({
-                audio: isGranted('audio'),
-                video: isGranted('video')
-            }));
+
+            if (!options.startWithVideoMuted && !options.startWithAudioMuted) {
+                APP.store.dispatch(notifyMediaPermissionsGranted({
+                    audio: isGranted('audio'),
+                    video: isGranted('video')
+                }));
+            }
             APP.store.dispatch(mediaPermissionPromptVisibilityChanged(false));
 
             return tracks;

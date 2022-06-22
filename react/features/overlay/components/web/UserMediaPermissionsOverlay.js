@@ -5,6 +5,7 @@ import React from 'react';
 import { translate, translateToHTML } from '../../../base/i18n';
 import { connect } from '../../../base/redux';
 
+import InfoIcon from '@atlaskit/icon/glyph/info'
 import AbstractUserMediaPermissionsOverlay, { abstractMapStateToProps }
     from './AbstractUserMediaPermissionsOverlay';
 import OverlayFrame from './OverlayFrame';
@@ -28,8 +29,7 @@ class UserMediaPermissionsOverlay extends AbstractUserMediaPermissionsOverlay {
         return (
             <OverlayFrame>
                 <div className = 'inlay'>
-                    <span className = 'inlay__icon icon-microphone' />
-                    <span className = 'inlay__icon icon-camera' />
+                    <div class='inlay__warning_icon'><InfoIcon/></div>
                     <h3
                         aria-label = { t('startupoverlay.genericTitle') }
                         className = 'inlay__title'
