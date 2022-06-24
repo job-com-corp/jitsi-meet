@@ -58,13 +58,18 @@ local function speaker_stats(room, speakerStats, requestURL)
     for jid, values in pairs(speakerStats) do
         -- skip reporting those without a nick('dominantSpeakerId')
         -- and skip focus if sneaked into the table
-        if values.nick ~= nil and values.nick ~= 'focus' then
+        if values.nick ~= nil and values.nick ~= 'focus' and values.nick ~= 'recorder' then
             local resultSpeakerStats = {};
             
             resultSpeakerStats['jid'] = jid;
             resultSpeakerStats['nick'] = values.nick;
             resultSpeakerStats['displayName'] = values.displayName;
             resultSpeakerStats['totalDominantSpeakerTime'] = values.totalDominantSpeakerTime;
+
+            if values.context_user != nil then
+                resultSpeakerStats['id'] = values.context_user.id;
+                resultSpeakerStats['email'] = values.context_user.email;
+            end
 
             table.insert(participantSpeakerStats, resultSpeakerStats);
         end
