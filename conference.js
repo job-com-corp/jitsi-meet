@@ -651,8 +651,8 @@ export default {
         tryCreateLocalTracks.then(tracks => {
             const isGranted = (type) => tracks.some(track => track.type === type);
             // remove in the future
-            console.log('TRACKS CREATED');
-            console.table(tracks);
+            logger.log('TRACKS CREATED');
+            logger.log(tracks);
             APP.store.dispatch(toggleSlowGUMOverlay(false));
 
             if (!options.startWithVideoMuted && !options.startWithAudioMuted) {

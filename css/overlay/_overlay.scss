@@ -8,6 +8,9 @@
         position: fixed;
         z-index: $overlayZ;
         background: $defaultBackground;
+        @media (max-width: 400px) {
+            display: none!important;
+        }
     }
 
     &__container-light {
@@ -21,6 +24,9 @@
         width: 56%;
         left: 50%;
         @include transform(translateX(-50%));
+        @media (max-width: 600px) {
+            width: 80%;
+        }
 
         &_bottom {
             position: absolute;

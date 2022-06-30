@@ -6,6 +6,9 @@
     background: $inlayColorBg;
     max-width: 255px;
     position: relative;
+    @media (max-width: 600px) {
+        margin-top: 7%;
+    }
 
     &__title {
         color: $popoverFontColor;
@@ -13,6 +16,10 @@
         font-weight: bold;
         font-size: 16px;
         line-height:22px;
+        @media (max-width: 600px) {
+            font-size: 12px;
+            line-height:17px;
+        }
     }
 
     &__text {
@@ -20,6 +27,10 @@
         display: block;
         font-size: 14px;
         line-height: 18px;
+        @media (max-width: 600px) {
+            font-size: 11px;
+            line-height: 15px;
+        }
     }
 
     &__icon {
