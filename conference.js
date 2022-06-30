@@ -650,7 +650,9 @@ export default {
         // overshadowed by the overlay.
         tryCreateLocalTracks.then(tracks => {
             const isGranted = (type) => tracks.some(track => track.type === type);
-
+            // remove in the future
+            console.log('TRACKS CREATED');
+            console.table(tracks);
             APP.store.dispatch(toggleSlowGUMOverlay(false));
 
             if (!options.startWithVideoMuted && !options.startWithAudioMuted) {
