@@ -210,7 +210,7 @@ function occupant_left(event)
             ['phonenum'] = phonenum;
          })
         })
-        module:log("info", "room-name - %s", roomname);
+    module:log("info", "room-name - %s", roomname);
 	module:log("info", "phonenum - %s", phonenum);
     end
 end
