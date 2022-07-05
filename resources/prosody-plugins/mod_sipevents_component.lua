@@ -2,7 +2,7 @@
 --
 --  Example config:
 --
---    Component "recordingevents.mydomain.com" "recordingevents_component"
+--    Component "sipevents.mydomain.com" "sipevents_component"
 --        muc_component = "conference.mydomain.com"
 --
 --        api_domain = "dev-team.info"
