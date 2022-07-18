@@ -159,10 +159,13 @@ function occupant_joined(event)
   local room = event.room;
   local occupant = event.occupant;
   local occupant_node = jid.node(occupant.jid);
+  local occupant_jid = occupant.jid
   if occupant_node == 'jigasi' then
     local phonenum = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
     local tenant = getTenantFromRoomName(room.jid);
     local roomname = jid.node(room.jid);
+    local occupant_jid = occupant.jid
+    local occupant_id = string.match(occupant_jid, "/(.*)")
     local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-joined/'..roomname;
    
     module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
@@ -172,13 +175,13 @@ function occupant_joined(event)
       method = "POST";
       body = json.encode({
         ['event'] = 'sip-user-joined';
-        ['room_name'] = roomname;
+        ['jitsiid'] = occupant_id;
         ['phonenum'] = phonenum;
      })
     })
-    
-    module:log("info", "room-name - %s", roomname);
+
     module:log("info", "phonenum - %s", phonenum);
+    module:log("info", "jitsiid - %s", occupant_id);
   end
 end
 
@@ -197,6 +200,8 @@ function occupant_left(event)
       local phonenum = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
       local tenant = getTenantFromRoomName(room.jid);
       local roomname = jid.node(room.jid);
+      local occupant_jid = occupant.jid
+      local occupant_id = string.match(occupant_jid, "/(.*)")
       local URL_EVENT_OCCUPANT_LEFT = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-left/'..roomname;
       
       module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_LEFT);
@@ -206,12 +211,13 @@ function occupant_left(event)
         method = "POST";
         body = json.encode({
             ['event'] = 'sip-user-left';
-            ['room_name'] = roomname;
+            ['jitsiid'] = occupant_id;
             ['phonenum'] = phonenum;
          })
         })
-    module:log("info", "room-name - %s", roomname);
+    
 	module:log("info", "phonenum - %s", phonenum);
+    module:log("info", "jitsiid - %s", occupant_id);
     end
 end
 
