@@ -166,7 +166,7 @@ function occupant_joined(event)
     local roomname = jid.node(room.jid);
     local occupant_jid = occupant.jid
     local occupant_id = string.match(occupant_jid, "/(.*)")
-    local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-joined/'..roomname;
+    local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-join/'..roomname;
    
     module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
     
@@ -181,7 +181,7 @@ function occupant_joined(event)
     })
 
     module:log("info", "phonenum - %s", phonenum);
-    module:log("info", "jitsid - %s", occupant_id);
+    module:log("info", "jitsId - %s", occupant_id);
   end
 end
 
