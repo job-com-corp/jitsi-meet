@@ -175,7 +175,7 @@ function occupant_joined(event)
       method = "POST";
       body = json.encode({
         ['event'] = 'sip-user-joined';
-        ['jitsiid'] = occupant_id;
+        ['jitsiId'] = occupant_id;
         ['phonenum'] = phonenum;
      })
     })
@@ -211,13 +211,13 @@ function occupant_left(event)
         method = "POST";
         body = json.encode({
             ['event'] = 'sip-user-left';
-            ['jitsiid'] = occupant_id;
+            ['jitsiId'] = occupant_id;
             ['phonenum'] = phonenum;
          })
         })
     
 	module:log("info", "phonenum - %s", phonenum);
-    module:log("info", "jitsiid - %s", occupant_id);
+    module:log("info", "jitsiId - %s", occupant_id);
     end
 end
 
