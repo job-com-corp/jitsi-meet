@@ -22,6 +22,7 @@ import {
     ASPECT_RATIO_BREAKPOINT,
     TILE_HORIZONTAL_MARGIN,
     TILE_VERTICAL_MARGIN,
+    FILMSTRIP_TILE_VERTICAL_MARGIN,
     TOOLBAR_HEIGHT,
     TOOLBAR_HEIGHT_MOBILE
 } from '../../constants';
@@ -443,7 +444,7 @@ class Filmstrip extends PureComponent <Props> {
             }
 
         } else if (_currentLayout === LAYOUTS.VERTICAL_FILMSTRIP_VIEW) {
-            const itemSize = _thumbnailHeight + TILE_VERTICAL_MARGIN;
+            const itemSize = _thumbnailHeight + FILMSTRIP_TILE_VERTICAL_MARGIN;
             const isNotOverflowing = (_remoteParticipantsLength * itemSize) <= _filmstripHeight;
 
             if (isNotOverflowing) {

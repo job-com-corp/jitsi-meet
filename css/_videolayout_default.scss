@@ -179,7 +179,7 @@
 
     &__hoverOverlay {
         background: rgba(0,0,0,.6);
-        border-radius: 12px;
+        border-radius: 8px;
         position: absolute;
         top: 0px;
         left: 0px;
@@ -226,7 +226,7 @@
 
 #localVideoWrapper video,
 #localVideoWrapper object {
-    border-radius: 12px !important;
+    border-radius: 8px !important;
     cursor: hand;
     object-fit: cover;
 }
@@ -672,6 +672,8 @@
 
     .videocontainer__hoverOverlay {
         visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s linear .3s, opacity .3s ease-in-out;
     }
 
     video {
@@ -690,6 +692,8 @@
 
     .videocontainer__hoverOverlay {
         visibility: visible;
+        opacity: 1;
+        transition: visibility 0s linear, opacity .3s ease-in-out;
     }
 
     video {
