@@ -5,6 +5,7 @@
     border: 4px solid rgba(255, 255, 255, 0.2);
     border-radius: 12px;
     margin: -4px $thumbnailVideoMargin 10px 0;
+    transition: border-color .3s ease-in-out;
 
     &.videoContainerFocused, &:hover {
         cursor: hand;
@@ -15,8 +16,6 @@
      */
     &.videoContainerFocused {
         border: $thumbnailVideoBorder solid $videoThumbnailSelected;
-        box-shadow: inset 0 0 3px $videoThumbnailSelected,
-        0 0 3px $videoThumbnailSelected;
     }
 
     .remotevideomenu > .icon-menu, .localvideomenu > .icon-menu {
