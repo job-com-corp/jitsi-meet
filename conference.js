@@ -497,17 +497,9 @@ export default {
 
         // Always get a handle on the audio input device so that we have statistics (such as "No audio input" or
         // "Are you trying to speak?" ) even if the user joins the conference muted.
-        const initialDevices = config.disableInitialGUM ? [] : [ 'audio' ];
+        const initialDevices = config.disableInitialGUM ? [] : [ 'audio', 'video' ];
         const requestedAudio = !config.disableInitialGUM;
-        let requestedVideo = false;
-
-        if (!config.disableInitialGUM
-                && !options.startWithVideoMuted
-                && !options.startAudioOnly
-                && !options.startScreenSharing) {
-            initialDevices.push('video');
-            requestedVideo = true;
-        }
+        let requestedVideo = true;
 
         if (!config.disableInitialGUM) {
             JitsiMeetJS.mediaDevices.addEventListener(
@@ -638,7 +630,6 @@ export default {
                         logger.error('The impossible just happened', err);
                     }
                     errors.videoOnlyError = err;
-
                     return [];
                 });
         }
@@ -651,17 +642,16 @@ export default {
         tryCreateLocalTracks.then(tracks => {
             const isGranted = (type) => tracks.some(track => track.type === type);
             // remove in the future
-            logger.log('TRACKS CREATED');
-            logger.log(tracks);
+            logger.log('TRACKS CREATED', tracks);
+            logger.log('ERRORS', errors);
             APP.store.dispatch(toggleSlowGUMOverlay(false));
-
-            if (!options.startWithVideoMuted && !options.startWithAudioMuted) {
-                APP.store.dispatch(notifyMediaPermissionsGranted({
-                    audio: isGranted('audio'),
-                    video: isGranted('video')
-                }));
+            APP.store.dispatch(notifyMediaPermissionsGranted({
+                audio: isGranted('audio'),
+                video: isGranted('video')
+            }));
+            if (tracks.length >= 2) {
+                APP.store.dispatch(mediaPermissionPromptVisibilityChanged(false));
             }
-            APP.store.dispatch(mediaPermissionPromptVisibilityChanged(false));
 
             return tracks;
         });
