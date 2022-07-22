@@ -241,6 +241,16 @@
 #largeVideoContainer {
     height: 100%;
     width: 100%;
+}
+
+#largeVideoContainer::after {
+    content: ' ';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
     background: linear-gradient(0deg,rgba(0,0,0,.5) .09%,transparent 34.44%),linear-gradient(180deg,rgba(0,0,0,.5) .09%,transparent 34.44%);
 }
 
