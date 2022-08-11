@@ -11,6 +11,10 @@
         @media (max-width: 400px) {
             display: none!important;
         }
+        &.permissions-overlay {
+            pointer-events: none;
+            background: transparent;
+        }
     }
 
     &__container-light {

@@ -18,7 +18,12 @@ type Props = {
      * Indicates the css style of the overlay. If true, then lighter; darker,
      * otherwise.
      */
-    isLightOverlay?: boolean
+    isLightOverlay?: boolean,
+
+    /**
+     * Additional classes to be added to the overlay
+     */
+    className?: string,
 };
 
 /**
@@ -34,7 +39,7 @@ export default class OverlayFrame extends Component<Props> {
     render() {
         return (
             <div
-                className = { this.props.isLightOverlay ? 'overlay__container-light' : 'overlay__container' }
+                className = { `${this.props.isLightOverlay ? 'overlay__container-light' : 'overlay__container'} ${this.props.className}` }
                 id = 'overlay'>
                 <div className = { 'overlay__content' }>
                     {

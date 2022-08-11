@@ -27,8 +27,8 @@ class UserMediaPermissionsOverlay extends AbstractUserMediaPermissionsOverlay {
         const { browser, t, mediaOverlayTitle, mediaOverlayText } = this.props;
 
         return (
-            <OverlayFrame>
-                <div className = 'inlay'>
+            <OverlayFrame className="permissions-overlay">
+                <div className = 'inlay test'>
                     <div class='inlay__warning_icon'><InfoIcon/></div>
                     <h3
                         aria-label = { t('startupoverlay.genericTitle') }
