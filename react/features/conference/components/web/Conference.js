@@ -236,6 +236,7 @@ class Conference extends AbstractConference<Props, *> {
         return (
             <div
                 id = 'layout_wrapper'
+                onTouchStart={ this._onMouseMove }
                 onMouseEnter = { this._onMouseEnter }
                 onMouseLeave = { this._onMouseLeave }
                 onMouseMove = { this._onMouseMove } >
