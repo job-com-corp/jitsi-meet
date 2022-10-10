@@ -166,7 +166,7 @@ function occupant_joined(event)
     local roomname = jid.node(room.jid);
     local occupant_jid = occupant.jid
     local jitsi_id = string.match(occupant_jid, "/(.*)")
-    local token_id = string.match(occupant_jid, "/[^@]*")
+    local token_id = string.match(occupant_jid, "[^@]*")
     local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/regular-user-join/'..roomname;
    
     module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
@@ -208,7 +208,7 @@ function occupant_left(event)
       local roomname = jid.node(room.jid);
       local occupant_jid = occupant.jid
       local jitsi_id = string.match(occupant_jid, "/(.*)")
-      local token_id = string.match(occupant_jid, "/[^@]*")
+      local token_id = string.match(occupant_jid, "[^@]*")
       local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/regular-user-leave/'..roomname;
      
       module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
