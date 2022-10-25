@@ -175,7 +175,7 @@ function occupant_joined(event)
       headers = http_headers;
       method = "POST";
       body = json.encode({
-        ['event']     = 'regular-user-joined';
+        ['event']     = 'Regular-user-joined';
         ['tokenId']   = token_id;
         ['jitsiId']   = jitsi_id;
         ['room-name'] = roomname;
