@@ -69,6 +69,7 @@ const commands = {
     toggleMediaPermissionScreen: 'toggle-media-permission-screen',
     toggleModeration: 'toggle-moderation',
     toggleRaiseHand: 'toggle-raise-hand',
+    toggleSubtitles: 'toggle-subtitles',
     toggleShareAudio: 'toggle-share-audio',
     toggleShareScreen: 'toggle-share-screen',
     toggleTileView: 'toggle-tile-view',

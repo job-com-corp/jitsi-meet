@@ -79,6 +79,7 @@ import { muteAllParticipants } from '../../react/features/video-menu/actions';
 import { setVideoQuality } from '../../react/features/video-quality';
 import VirtualBackgroundDialog from '../../react/features/virtual-background/components/VirtualBackgroundDialog';
 import { getJitsiMeetTransport } from '../transport';
+import { toggleRequestingSubtitles } from '../../react/features/subtitles';
 
 import { API_ID, ENDPOINT_TEXT_MESSAGE_NAME } from './constants';
 
@@ -246,6 +247,11 @@ function initCommands() {
             sendAnalytics(createApiEvent('toggle-audio'));
             logger.log('Audio toggle: API command received');
             APP.conference.toggleAudioMuted(false /* no UI */);
+        },
+        'toggle-subtitles': () => {
+            sendAnalytics(createApiEvent('toggle-subtitles'));
+            logger.log('Subtitles toggle: API command received');
+            APP.store.dispatch(toggleRequestingSubtitles());
         },
         'toggle-video': () => {
             sendAnalytics(createApiEvent('toggle-video'));
