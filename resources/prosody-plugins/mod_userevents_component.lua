@@ -160,14 +160,14 @@ function occupant_joined(event)
   local occupant = event.occupant;
   local occupant_node = jid.node(occupant.jid);
   local occupant_jid = occupant.jid
-  if occupant_node != 'jigasi' then
-    local phonenum = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
+  if(occupant_node ~= 'recorder') then
+  if(occupant_node ~= 'jigasi')
+  then
     local tenant = getTenantFromRoomName(room.jid);
     local roomname = jid.node(room.jid);
-    local occupant_jid = occupant.jid
     local jitsi_id = string.match(occupant_jid, "/(.*)")
-    local token_id = string.match(occupant_jid, "[^@]*")
-    local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/regular-user-join/'..roomname;
+    local jitsi_uid = string.match(occupant_jid, "[^@]*")
+    local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/user-join/'..roomname;
    
     module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
     
@@ -176,17 +176,37 @@ function occupant_joined(event)
       method = "POST";
       body = json.encode({
         ['event']     = 'Regular-user-joined';
-        ['tokenId']   = token_id;
-        ['jitsiId']   = jitsi_id;
+        ['jitsiUid']   = jitsi_uid;
+        ['jitsid']   = jitsi_id;
         ['room-name'] = roomname;
      })
     })
     
     module:log("info", "Regular user joined");
-    module:log("info", "jitsiId - %s", occupant_id);
-    module:log("info", "tokenId - %s", token_id);
+    module:log("info", "jitsiId - %s", jitsi_id);
+    module:log("info", "jitsiUid - %s", jitsi_uid);
     module:log("info", "room-name - %s", roomname);
+  else
+    local phonenum = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
+    local tenant = getTenantFromRoomName(room.jid);
+    local roomname = jid.node(room.jid);
+    local jitsi_id = string.match(occupant_jid, "/(.*)")
+    local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/user-join/'..roomname;
+    async_http_request(URL_EVENT_OCCUPANT_JOINED, {
+        headers = http_headers;
+        method = "POST";
+        body = json.encode({
+          ['event']    = 'SIP-user-joined';
+          ['jitsiId']  = jitsi_id;
+          ['phoneNum'] = phonenum;
+       })
+      })
 
+      module:log("info", "Sip user joined");
+      module:log("info", "jitsiId - %s", jitsi_id);
+      module:log("info", "phoneNum- %s", phonenum);
+      module:log("info", "room-name - %s", roomname);
+  end
   end
 end
 
@@ -202,14 +222,17 @@ function occupant_left(event)
     local occupant = event.occupant;
     local occupant_node = jid.node(occupant.jid);
     local occupant_jid = occupant.jid
-    if occupant_node != 'jigasi' then
+    
+    if(occupant_node ~= 'recorder') 
+    then
+    if(occupant_node ~= 'jigasi')
+    then
       local phonenum = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
       local tenant = getTenantFromRoomName(room.jid);
       local roomname = jid.node(room.jid);
-      local occupant_jid = occupant.jid
       local jitsi_id = string.match(occupant_jid, "/(.*)")
-      local token_id = string.match(occupant_jid, "[^@]*")
-      local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/regular-user-leave/'..roomname;
+      local jitsi_uid = string.match(occupant_jid, "[^@]*")
+      local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/user-left/'..roomname;
      
       module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
       
@@ -217,17 +240,38 @@ function occupant_left(event)
         headers = http_headers;
         method = "POST";
         body = json.encode({
-          ['event']     = 'regular-user-levae';
-          ['tokenId']   = token_id;
+          ['event']     = 'Regular-user-left';
+          ['jitsiUid']   = jitsi_uid;
           ['jitsiId']   = jitsi_id;
           ['room-name'] = roomname;
        })
       })
       
-      module:log("info", "Regular user joined");
-      module:log("info", "jitsiId - %s", occupant_id);
-      module:log("info", "tokenId - %s", token_id);
+      module:log("info", "Regular user left");
+      module:log("info", "jitsiId - %s", jitsi_id);
+      module:log("info", "jitsiUid - %s", jitsi_uid);
       module:log("info", "room-name - %s", roomname);
+    else
+        local phonenum = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
+        local tenant = getTenantFromRoomName(room.jid);
+        local roomname = jid.node(room.jid);
+        local jitsi_id = string.match(occupant_jid, "/(.*)")
+        local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/user-left/'..roomname;
+        async_http_request(URL_EVENT_OCCUPANT_JOINED, {
+            headers = http_headers;
+            method = "POST";
+            body = json.encode({
+              ['event']    = 'SIP-user-left';
+              ['jitsiId']  = jitsi_id;
+              ['phoneNum'] = phonenum;
+           })
+          })
+          
+          module:log("info", "Sip user left");
+          module:log("info", "jitsiId - %s", jitsi_id);
+          module:log("info", "phoneNum- %s", phonenum);
+          module:log("info", "room-name - %s", roomname);
+    end
     end
 end
 
