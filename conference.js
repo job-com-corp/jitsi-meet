@@ -832,6 +832,8 @@ export default {
             // they may remain as empty strings.
             this._initDeviceList(true);
 
+            this._createVolumeMeters(APP.store.getState()['features/base/devices'].availableDevices?.audioInput ?? []);
+
             if (isPrejoinPageVisible(APP.store.getState())) {
                 return APP.store.dispatch(initPrejoin(tracks, errors));
             }
@@ -847,6 +849,7 @@ export default {
         let localTracks = tracks;
 
         this._initDeviceList(true);
+        this._createVolumeMeters(APP.store.getState()['features/base/devices'].availableDevices?.audioInput ?? [])
 
         if (initialOptions.startWithAudioMuted) {
             // Always add the track on Safari because of a known issue where audio playout doesn't happen
@@ -2624,8 +2627,6 @@ export default {
 
             return dispatch(getAvailableDevices())
                 .then(devices => {
-                    this._createVolumeMeters(devices);
-
                     // Ugly way to synchronize real device IDs with local
                     // storage and settings menu. This is a workaround until
                     // getConstraints() method will be implemented in browsers.
@@ -2646,6 +2647,7 @@ export default {
      * @private
      */
     _createVolumeMeters(devices) {
+        logger.info("CREATING VOLUME METERS:", devices);
         const onlyNewDevices = devices.filter(
             nDevice => nDevice.kind === 'audioinput'
             && !_cachedAudioInputTracks[nDevice.deviceId]
@@ -2874,6 +2876,9 @@ export default {
                         return Promise.resolve();
                     });
 
+                    this._createVolumeMeters(devices);
+                    this._disposeOldTracks(devices);
+
                     return Promise.all(muteSyncPromises)
                         .then(() =>
                             Promise.all(Object.keys(requestedInput).map(mediaType => {
@@ -2920,9 +2925,6 @@ export default {
                         muteLocalVideo(true);
                     }
                 }));
-
-        this._createVolumeMeters(devices);
-        this._disposeOldTracks(devices);
 
         return Promise.all(promises)
             .then(() => {
