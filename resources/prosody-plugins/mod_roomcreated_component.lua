@@ -86,6 +86,62 @@ local function getJidNode(occupantjid)
 
     return node;
 end
+local function async_http_request(url, options, callback, timeout_callback, retries)
+  local completed = false;
+  local timed_out = false;
+  local retries = retries or api_retry_count;
+
+  local function cb_(response_body, response_code)
+      if not timed_out then  -- request completed before timeout
+          completed = true;
+          if (response_code == 0 or api_should_retry_for_code(response_code)) and retries > 0 then
+              module:log("warn", "API Response code %d. Will retry after %ds", response_code, api_retry_delay);
+              timer.add_task(api_retry_delay, function()
+                  async_http_request(url, options, callback, timeout_callback, retries - 1)
+              end)
+              return;
+          end
+
+          module:log("debug", "%s %s returned code %s", options.method, url, response_code);
+
+          if callback then
+              callback(response_body, response_code)
+          end
+      end
+  end
+
+  local request = http.request(url, options, cb_);
+
+  timer.add_task(api_timeout, function ()
+      timed_out = true;
+
+      if not completed then
+          http.destroy_request(request);
+          if timeout_callback then
+              timeout_callback()
+          end
+      end
+  end);
+
+end
+
+--- Returns current timestamp
+local function now()
+  return os.time();
+end
+
+--- Checks if event is triggered by healthchecks or focus user.
+function is_system_event(event)
+  if is_healthcheck_room(event.room.jid) then
+      return true;
+  end
+
+  if event.occupant and jid.node(event.occupant.jid) == "focus" then
+      return true;
+  end
+
+  return false;
+end
 function room_created(event)
     local room = event.room;
     local tenant = getTenantFromRoomName(room.jid);
@@ -102,4 +158,21 @@ function room_created(event)
     })
 
     module:log("info", "interview-started - %s");
+end
+function process_host(host)
+  if host == muc_component_host then -- the conference muc component
+      module:log("info","Hook to muc events on %s", host);
+
+      local muc_module = module:context(host);
+      muc_module:hook("muc-room-created", room_created, -1);
+  end
+end
+
+if prosody.hosts[muc_component_host] == nil then
+  module:log("info","No muc component found, will listen for it: %s", muc_component_host)
+
+  -- when a host or component is added
+  prosody.events.add_handler("host-activated", process_host);
+else
+  process_host(muc_component_host);
 end
