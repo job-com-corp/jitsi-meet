@@ -161,28 +161,41 @@ function occupant_joined(event)
   local occupant_node = jid.node(occupant.jid);
   local occupant_jid = occupant.jid
   if occupant_node == 'jigasi' then
-    local phonenum = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
+    local nick = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
     local tenant = getTenantFromRoomName(room.jid);
     local roomname = jid.node(room.jid);
-    local occupant_jid = occupant.jid
     local occupant_id = string.match(occupant_jid, "/(.*)")
-    local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-join/'..roomname;
+    if nick == 'Transcriber' then
+        local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/transcription-started/'..roomname;
    
-    module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
-    
-    async_http_request(URL_EVENT_OCCUPANT_JOINED, {
-      headers = http_headers;
-      method = "POST";
-      body = json.encode({
-        ['event'] = 'sip-user-joined';
-        ['jitsiId'] = occupant_id;
-        ['phoneNum'] = phonenum;
-     })
-    })
+        module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
+        
+        async_http_request(URL_EVENT_OCCUPANT_JOINED, {
+          headers = http_headers;
+          method = "POST";
+          body = json.encode({
+            ['event'] = 'Transcription-started';
+            ['user'] = nick;
+          })
+        })
+        module:log("info", "user - %s ", nick);
+    else
+        local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-join/'..roomname;
+        module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
 
-    module:log("info", "phoneNum - %s", phonenum);
-    module:log("info", "jitsiId - %s", occupant_id);
-  end
+        async_http_request(URL_EVENT_OCCUPANT_JOINED, {
+          headers = http_headers;
+          method = "POST";
+          body = json.encode({
+            ['event'] = 'sip-user-joined';
+            ['jitsiId'] = occupant_id;
+            ['phoneNum'] = nick;
+          })
+        })
+    
+        module:log("info", "phoneNum - %s", nick);
+        module:log("info", "jitsiId - %s", occupant_id);
+    end
 end
 
 --- Callback when an occupant has left room
@@ -197,27 +210,28 @@ function occupant_left(event)
     local occupant = event.occupant;
     local occupant_node = jid.node(occupant.jid);
     if occupant_node == 'jigasi' then
-      local phonenum = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
+      local nick = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
       local tenant = getTenantFromRoomName(room.jid);
       local roomname = jid.node(room.jid);
       local occupant_jid = occupant.jid
       local occupant_id = string.match(occupant_jid, "/(.*)")
       local URL_EVENT_OCCUPANT_LEFT = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-left/'..roomname;
-      
-      module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_LEFT);
+      if nick != 'Transcriber' then
+        module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_LEFT);
 
-      async_http_request(URL_EVENT_OCCUPANT_LEFT, {
-        headers = http_headers;
-        method = "POST";
-        body = json.encode({
-            ['event'] = 'sip-user-left';
-            ['jitsiId'] = occupant_id;
-            ['phoneNum'] = phonenum;
-         })
-        })
-    
-	module:log("info", "phoneNum - %s", phonenum);
-    module:log("info", "jitsiId - %s", occupant_id);
+        async_http_request(URL_EVENT_OCCUPANT_LEFT, {
+            headers = http_headers;
+            method = "POST";
+            body = json.encode({
+                ['event'] = 'sip-user-left';
+                ['jitsiId'] = occupant_id;
+                ['phoneNum'] = nick;
+            })
+            })
+        
+        module:log("info", "phoneNum - %s", nick);
+        module:log("info", "jitsiId - %s", occupant_id);
+       end
     end
 end
 
