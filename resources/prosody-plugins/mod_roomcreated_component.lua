@@ -157,7 +157,7 @@ function room_created(event)
        })
     })
 
-    module:log("info", "interview-started - %s");
+    module:log("info", "interview-started - %s", roomname);
 end
 function process_host(host)
   if host == muc_component_host then -- the conference muc component
