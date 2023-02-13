@@ -196,6 +196,7 @@ function occupant_joined(event)
         module:log("info", "phoneNum - %s", nick);
         module:log("info", "jitsiId - %s", occupant_id);
     end
+   end
 end
 
 --- Callback when an occupant has left room
@@ -216,7 +217,7 @@ function occupant_left(event)
       local occupant_jid = occupant.jid
       local occupant_id = string.match(occupant_jid, "/(.*)")
       local URL_EVENT_OCCUPANT_LEFT = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-left/'..roomname;
-      if nick != 'Transcriber' then
+      if nick ~= 'Transcriber' then
         module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_LEFT);
 
         async_http_request(URL_EVENT_OCCUPANT_LEFT, {
@@ -227,7 +228,7 @@ function occupant_left(event)
                 ['jitsiId'] = occupant_id;
                 ['phoneNum'] = nick;
             })
-            })
+        })
         
         module:log("info", "phoneNum - %s", nick);
         module:log("info", "jitsiId - %s", occupant_id);
