@@ -188,7 +188,7 @@ class LargeVideo extends Component<Props> {
                 {_whiteboardEnabled && <Whiteboard />}
                 <div id = 'etherpad' />
 
-                <Watermarks />
+                {!interfaceConfig.hideWatermarks && <Watermarks />}
 
                 <div
                     id = 'dominantSpeaker'

@@ -92,7 +92,11 @@ export function commonUserJoinedHandling(
         conference: IJitsiConference,
         user: any) {
     const id = user.getId();
-    const displayName = user.getDisplayName();
+    let displayName = user.getDisplayName();
+    const userIdentity = user.getIdentity();
+
+    const identityEmail = (userIdentity && userIdentity.user && userIdentity.user.email) || "";
+    const identityName = (userIdentity && userIdentity.user && userIdentity.user.name) || displayName;
 
     if (user.isHidden()) {
         dispatch(hiddenParticipantJoined(id, displayName));
@@ -103,7 +107,8 @@ export function commonUserJoinedHandling(
             botType: user.getBotType(),
             conference,
             id,
-            name: displayName,
+            email: identityEmail,
+            name: identityName,
             presence: user.getStatus(),
             role: user.getRole(),
             isReplacing

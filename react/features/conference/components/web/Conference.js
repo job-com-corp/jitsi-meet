@@ -198,6 +198,16 @@ class Conference extends AbstractConference<Props, *> {
      */
     render() {
         const {
+            // XXX The character casing of the name filmStripOnly utilized by
+            // interfaceConfig is obsolete but legacy support is required.
+            filmStripOnly: filmstripOnly,
+            hideToolbar: hideToolbar,
+            hideNotifications: hideNotifications,
+            hideChat: hideChat
+        } = interfaceConfig;
+
+        const {
+            _isParticipantsPaneVisible,
             _layoutClassName,
             _notificationsVisible,
             _overflowDrawer,
@@ -208,6 +218,7 @@ class Conference extends AbstractConference<Props, *> {
         return (
             <div
                 id = 'layout_wrapper'
+                onTouchStart={ this._onMouseMove }
                 onMouseEnter = { this._onMouseEnter }
                 onMouseLeave = { this._onMouseLeave }
                 onMouseMove = { this._onMouseMove }
@@ -232,13 +243,14 @@ class Conference extends AbstractConference<Props, *> {
                         }
                     </div>
 
-                    { _showPrejoin || _showLobby || <Toolbox /> }
+                    { !hideToolbar && (_showPrejoin || _showLobby || <Toolbox showDominantSpeakerName = { true } />)}
+                    { !hideChat && (filmstripOnly || <Chat />)}
 
-                    {_notificationsVisible && (_overflowDrawer
+                    {!hideNotifications ? _notificationsVisible && (_overflowDrawer
                         ? <JitsiPortal className = 'notification-portal'>
                             {this.renderNotificationsContainer({ portal: true })}
                         </JitsiPortal>
-                        : this.renderNotificationsContainer())
+                        : this.renderNotificationsContainer()) : null
                     }
 
                     <CalleeInfoContainer />

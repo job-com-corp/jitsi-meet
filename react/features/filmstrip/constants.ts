@@ -124,6 +124,13 @@ export const DISPLAY_MODE_TO_CLASS_NAME = [
 export const TILE_VERTICAL_MARGIN = 4;
 
 /**
+ * The vertical margin of a tile in the filmstrip.
+ *
+ * @type {number}
+ */
+export const FILMSTRIP_TILE_VERTICAL_MARGIN = 20;
+
+/**
  * The horizontal margin of a tile.
  *
  * @type {number}

@@ -211,16 +211,21 @@
 }
 
 #preview {
-    background: #040404;
+    background: #414249;
     display: flex;
     align-items: center;
     justify-content: center;
     height: 100%;
     width: 100%;
+    text-align: center;
 
     .avatar {
         text {
             fill: white;
+        }
+        @media (max-width: 320px) {
+            width: 100px!important;
+            height: 100px!important;
         }
     }
 

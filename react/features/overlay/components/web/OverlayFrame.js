@@ -23,7 +23,12 @@ type Props = {
     /**
      * The style property.
      */
-    style: Object
+    style: Object,
+
+    /**
+     * Additional classes to be added to the overlay
+     */
+    className?: string,
 };
 
 /**
@@ -39,7 +44,7 @@ export default class OverlayFrame extends Component<Props> {
     render() {
         return (
             <div
-                className = { this.props.isLightOverlay ? 'overlay__container-light' : 'overlay__container' }
+                className = { `${this.props.isLightOverlay ? 'overlay__container-light' : 'overlay__container'} ${this.props.className}` }
                 id = 'overlay'
                 style = { this.props.style }>
                 <div className = { 'overlay__content' }>
