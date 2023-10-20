@@ -216,23 +216,6 @@ export function setConfigFromURLParams(
         location: Object) {
     const params = parseURLParams(location);
     const json = {};
-
-    // At this point we have:
-    // params = {
-    //     "config.disableAudioLevels": false,
-    //     "config.channelLastN": -1,
-    //     "interfaceConfig.APP_NAME": "TeamAI"
-    // }
-    // We want to have:
-    // json = {
-    //     config: {
-    //         "disableAudioLevels": false,
-    //         "channelLastN": -1
-    //     },
-    //     interfaceConfig: {
-    //         "APP_NAME": "TeamAI"
-    //     }
-    // }
     config && (json.config = {});
     interfaceConfig && (json.interfaceConfig = {});
     loggingConfig && (json.loggingConfig = {});
