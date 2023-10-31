@@ -1683,6 +1683,19 @@ class API {
     }
 
     /**
+     * Notify external application of each transcription message.
+     *
+     * @param {Object} message - Transcription message.
+     * @returns {void}
+     */
+    notifyTranscriptionMessage(message) {
+        this._sendEvent({
+            name: 'transcription-message',
+            message
+        });
+    }
+
+    /**
      * Disposes the allocated resources.
      *
      * @returns {void}

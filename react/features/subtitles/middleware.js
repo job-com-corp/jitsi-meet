@@ -1,5 +1,7 @@
+/* global APP */
 // @flow
 
+import { getConferenceTimestamp } from '../base/conference';
 import { MiddlewareRegistry } from '../base/redux';
 
 import {
@@ -147,6 +149,14 @@ function _endpointMessageReceived({ dispatch, getState }, next, action) {
                 newTranscriptMessage.unstable = text;
             }
 
+            APP.API.notifyTranscriptionMessage({
+                id: transcriptMessageID,
+                timestamp: new Date().getTime() - getConferenceTimestamp(APP.store.getState()),
+                message: {
+                    ...newTranscriptMessage,
+                    participant: json.participant
+                }
+            });
             dispatch(
                 updateTranscriptMessage(
                     transcriptMessageID,

@@ -138,6 +138,7 @@ const events = {
     'track-receiving-data-status': 'trackReceivingDataStatus',
     'talk-while-muted': 'talkWhileMuted',
     'notification-raised': 'notificationRaised',
+    'transcription-message': 'transcriptionMessage'
 };
 
 /**
