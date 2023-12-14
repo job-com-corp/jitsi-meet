@@ -12,6 +12,8 @@ export interface IOverlayState {
         name?: string;
     };
     isMediaPermissionPromptVisible?: boolean;
+    mediaOverlayTitle?: string,
+    mediaOverlayText?: string,
 }
 
 /**
@@ -40,9 +42,11 @@ ReducerRegistry.register<IOverlayState>('features/overlay', (state = {}, action)
  */
 function _mediaPermissionPromptVisibilityChanged(
         state: IOverlayState,
-        { browser, isVisible }: { browser?: string; isVisible?: boolean; }) {
+        { browser, isVisible,  title, text }: { browser?: string; isVisible?: boolean; title?: string; text?: string; }) {
     return assign(state, {
         browser,
-        isMediaPermissionPromptVisible: isVisible
+        isMediaPermissionPromptVisible: isVisible,
+                mediaOverlayText: text,
+        mediaOverlayTitle: title
     });
 }

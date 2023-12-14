@@ -16,6 +16,8 @@ interface IProps extends WithTranslation {
      * browser.
      */
     browser?: string;
+    mediaOverlayTitle?: string,
+    mediaOverlayText?: string,
 }
 
 /**
@@ -47,9 +49,11 @@ export default class AbstractUserMediaPermissionsOverlay
  * }}
  */
 export function abstractMapStateToProps(state: IReduxState) {
-    const { browser } = state['features/overlay'];
+    const { browser, mediaOverlayTitle, mediaOverlayText } = state['features/overlay'];
 
     return {
-        browser
+        browser,
+        mediaOverlayTitle,
+        mediaOverlayText
     };
 }

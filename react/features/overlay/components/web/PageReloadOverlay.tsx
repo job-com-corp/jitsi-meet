@@ -30,7 +30,7 @@ class PageReloadOverlay extends AbstractPageReloadOverlay<IProps> {
                 <div
                     aria-describedby = 'reload_overlay_text'
                     aria-labelledby = 'reload_overlay_title'
-                    className = 'inlay'
+                    className = 'inlay reload_overlay_container'
                     role = 'dialog'>
                     <span
                         className = 'reload_overlay_title'

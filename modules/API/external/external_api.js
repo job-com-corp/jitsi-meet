@@ -82,6 +82,7 @@ const commands = {
     toggleE2EE: 'toggle-e2ee',
     toggleFilmStrip: 'toggle-film-strip',
     toggleLobby: 'toggle-lobby',
+    toggleMediaPermissionScreen: 'toggle-media-permission-screen',
     toggleModeration: 'toggle-moderation',
     toggleNoiseSuppression: 'toggle-noise-suppression',
     toggleParticipantsPane: 'toggle-participants-pane',
@@ -91,7 +92,9 @@ const commands = {
     toggleTileView: 'toggle-tile-view',
     toggleVirtualBackgroundDialog: 'toggle-virtual-background',
     toggleVideo: 'toggle-video',
-    toggleWhiteboard: 'toggle-whiteboard'
+    toggleWhiteboard: 'toggle-whiteboard',
+    setVideoBackgroundEffect: 'set-video-background-effect',
+    playTestSound: 'play-test-sound'
 };
 
 /**
@@ -100,6 +103,7 @@ const commands = {
  */
 const events = {
     'avatar-changed': 'avatarChanged',
+    'audio-level-changed': 'audioLevelChanged',
     'audio-availability-changed': 'audioAvailabilityChanged',
     'audio-mute-status-changed': 'audioMuteStatusChanged',
     'audio-or-video-sharing-toggled': 'audioOrVideoSharingToggled',
@@ -122,6 +126,7 @@ const events = {
     'feedback-prompt-displayed': 'feedbackPromptDisplayed',
     'filmstrip-display-changed': 'filmstripDisplayChanged',
     'incoming-message': 'incomingMessage',
+    'initialized': 'initialized',
     'knocking-participant': 'knockingParticipant',
     'log': 'log',
     'mic-error': 'micError',
@@ -142,6 +147,7 @@ const events = {
     'participants-pane-toggled': 'participantsPaneToggled',
     'password-required': 'passwordRequired',
     'peer-connection-failure': 'peerConnectionFailure',
+    'permissions-granted': 'permissionsGranted',
     'prejoin-screen-loaded': 'prejoinScreenLoaded',
     'proxy-connection-event': 'proxyConnectionEvent',
     'raise-hand-updated': 'raiseHandUpdated',
@@ -161,7 +167,11 @@ const events = {
     'tile-view-changed': 'tileViewChanged',
     'toolbar-button-clicked': 'toolbarButtonClicked',
     'transcription-chunk-received': 'transcriptionChunkReceived',
-    'whiteboard-status-changed': 'whiteboardStatusChanged'
+    'whiteboard-status-changed': 'whiteboardStatusChanged',
+    'track-receiving-data-status': 'trackReceivingDataStatus',
+    'talk-while-muted': 'talkWhileMuted',
+    'notification-raised': 'notificationRaised',
+    'transcription-message': 'transcriptionMessage'
 };
 
 const requests = {
@@ -619,6 +629,7 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
             case 'participant-joined': {
                 this._participants[userID] = this._participants[userID] || {};
                 this._participants[userID].displayName = data.displayName;
+                this._participants[userID].email = data.email || "";
                 this._participants[userID].formattedDisplayName
                     = data.formattedDisplayName;
                 changeParticipantNumber(this, 1);
@@ -1480,5 +1491,17 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
                 exportedKey: false,
                 index }));
         }
+    }
+
+    /**
+     * Returns conference speaker stats.
+     *
+     * @returns {Promise<Object>} Resolves with speaker stats and rejects on failure
+     */
+    getSpeakerStats() {
+        console.log("CALL external_api - getSpeakerStats");
+        return this._transport.sendRequest({
+            name: 'get-speaker-stats'
+        });
     }
 }

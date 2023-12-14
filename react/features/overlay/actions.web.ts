@@ -14,11 +14,13 @@ import { MEDIA_PERMISSION_PROMPT_VISIBILITY_CHANGED } from './actionTypes';
  *     isVisible: {boolean}
  * }}
  */
-export function mediaPermissionPromptVisibilityChanged(isVisible: boolean, browser: string) {
+export function mediaPermissionPromptVisibilityChanged(isVisible: boolean, browser: string, title?: string, text?: string) {
     return {
         type: MEDIA_PERMISSION_PROMPT_VISIBILITY_CHANGED,
         browser,
-        isVisible
+        isVisible,
+        text,
+        title
     };
 }
 

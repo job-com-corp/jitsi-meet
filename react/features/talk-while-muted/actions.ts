@@ -1,4 +1,4 @@
-import { SET_CURRENT_NOTIFICATION_UID } from './actionTypes';
+import { SET_CURRENT_NOTIFICATION_UID, TALK_WHILE_MUTED } from './actionTypes';
 
 /**
  * Sets UID of the the pending notification to use it when hiding
@@ -16,4 +16,10 @@ export function setCurrentNotificationUid(uid?: string) {
         type: SET_CURRENT_NOTIFICATION_UID,
         uid
     };
+}
+
+export function talkWhileMuted() {
+  return {
+    type: TALK_WHILE_MUTED
+  }
 }

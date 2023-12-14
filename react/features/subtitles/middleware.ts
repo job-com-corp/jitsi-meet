@@ -2,6 +2,7 @@ import { AnyAction } from 'redux';
 
 import { IStore } from '../app/types';
 import MiddlewareRegistry from '../base/redux/MiddlewareRegistry';
+import { getConferenceTimestamp } from '../base/conference/functions';
 
 import {
     ENDPOINT_MESSAGE_RECEIVED,
@@ -161,7 +162,21 @@ function _endpointMessageReceived({ dispatch, getState }: IStore, next: Function
                     messageID: transcriptMessageID,
                     ...newTranscriptMessage
                 });
+                APP.API.notifyTranscriptionMessage({
+                    id: transcriptMessageID,
+                    // @ts-ignore
+                    timestamp: new Date().getTime() - getConferenceTimestamp(APP.store.getState()),
+                    message: {
+                        ...newTranscriptMessage,
+                        participant: json.participant
+                    }
+                }
+                );
             }
+            dispatch(
+                updateTranscriptMessage(
+                    transcriptMessageID,
+                    newTranscriptMessage));
         }
     } catch (error) {
         logger.error('Error occurred while updating transcriptions\n', error);

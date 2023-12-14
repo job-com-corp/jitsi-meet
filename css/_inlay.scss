@@ -1,30 +1,57 @@
+$popoverFontColor: red;
+$inlayColorBg: white;
+
 .inlay {
-    margin-top: 14%;
-    @include border-radius(4px);
-    padding: 40px 38px 44px;
-    color: #fff;
-    background: lighten(#474747, 20%);
-    text-align: center;
+    margin: 14% auto 0;
+    @include border-radius(20px);
+    padding: 20px 50px;
+    color: $popoverFontColor;
+    background: $inlayColorBg;
+    max-width: 255px;
+    position: relative;
+    @media (max-width: 600px) {
+        margin-top: 7%;
+    }
 
     &__title {
-        margin: 17px 0;
-        padding-bottom: 17px;
-        color: #ffffff;
-        font-size: 21px;
-        letter-spacing: 0.3px;
-        border-bottom: 1px solid lighten(#FFFFFF, 10%);
+        color: $popoverFontColor;
+        margin: 0 0 10px;
+        font-weight: bold;
+        font-size: 16px;
+        line-height:22px;
+        @media (max-width: 600px) {
+            font-size: 12px;
+            line-height:17px;
+        }
     }
 
     &__text {
         color: #ffffff;
         display: block;
-        margin-top: 22px;
-        font-size: 16px;
+        font-size: 14px;
+        line-height: 18px;
+        @media (max-width: 600px) {
+            font-size: 11px;
+            line-height: 15px;
+        }
     }
 
     &__icon {
-        margin: 0 10px;
+        margin: 10px;
         font-size: 50px;
     }
 
+    &__warning_icon {
+        position: absolute;
+        left: 20px;
+        top: 23px;
+
+        svg {
+            width: 16px;
+            height: 16px;
+            path {
+                fill: #F2994A;
+            }
+        }
+    }
 }

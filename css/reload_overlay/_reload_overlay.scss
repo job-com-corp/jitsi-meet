@@ -1,20 +1,28 @@
 .reload_overlay_title {
     display: block;
     font-size: 16px;
-    line-height: 20px;
+    line-height: 22px;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 10px;
 }
 
 .reload_overlay_text {
     display: block;
-    font-size: 12px;
-    line-height: 30px;
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+}
+
+.reload_overlay_container {
+    text-align: center;
 }
 
 #reloadProgressBar {
     background: #e9e9e9;
     border-radius: 3px;
     height: 5px;
-    margin: 5px auto;
+    margin: 15px auto;
     overflow: hidden;
     width: 180px;
 

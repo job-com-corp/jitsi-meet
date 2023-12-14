@@ -31,7 +31,9 @@ import {
     TRACK_REMOVED,
     TRACK_STOPPED,
     TRACK_UPDATED,
-    TRACK_WILL_CREATE
+    TRACK_WILL_CREATE,
+    TRACK_RECEIVING_DATA_STATUS,
+    TRACK_AUDIO_LEVEL_CHANGED,
 } from './actionTypes';
 import {
     createLocalTracksF,
@@ -271,6 +273,25 @@ export function noDataFromSource(track: any) {
 }
 
 /**
+* Signals that the JitsiLocalTrack is receiving data or not.
+*
+* @param  {JitsiLocalTrack}  track
+* @param  {Boolean} isReceivingData
+* @returns {{
+*     type: TRACK_RECEIVING_DATA_STATUS,
+*     track: Track
+*     isReceivingData: boolean
+* }}
+*/
+export function receivingDataStatusFromSource(track: any, isReceivingData: boolean) {
+    return {
+        type: TRACK_RECEIVING_DATA_STATUS,
+        track,
+        isReceivingData
+    };
+}
+
+/**
  * Displays a no data from source video error if needed.
  *
  * @param {JitsiLocalTrack} jitsiTrack - The track.
@@ -405,6 +426,13 @@ export function trackAdded(track: any) {
             }
 
             isReceivingData = track.isReceivingData();
+            dispatch(receivingDataStatusFromSource(
+                {
+                    deviceId: track.deviceId,
+                    type: track.type
+                },
+                isReceivingData)
+            );
             track.on(JitsiTrackEvents.NO_DATA_FROM_SOURCE, () => dispatch(noDataFromSource({ jitsiTrack: track })));
             if (!isReceivingData) {
                 if (mediaType === MEDIA_TYPE.AUDIO) {
@@ -504,6 +532,25 @@ export function trackMuteUnmuteFailed(track: any, wasMuting: boolean): {
         type: TRACK_MUTE_UNMUTE_FAILED,
         track,
         wasMuting
+        };
+}
+
+/**
+ * Create an action for when a track's audio level changes.
+ *
+ * @param  {string} deviceId - device ID.
+ * @param  {number} audioLevel - audio level.
+ * @returns {{
+ *     type: TRACK_AUDIO_LEVEL_CHANGED,
+ *     deviceId: string,
+ *     audioLevel: number
+ * }}
+ */
+export function trackAudioLevelChanged(deviceId: string, audioLevel: number) {
+    return {
+        type: TRACK_AUDIO_LEVEL_CHANGED,
+        deviceId,
+        audioLevel
     };
 }
 

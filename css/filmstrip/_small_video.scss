@@ -2,9 +2,10 @@
     display: inline-block;
     position: relative;
     background-size: contain;
-    border: 2px solid transparent;
-    border-radius: $borderRadius;
-    margin: 0 2px;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    margin: 4px 0;
+    transition: border-color .3s ease-in-out;
 
     &:hover {
         cursor: hand;
@@ -12,7 +13,7 @@
 
     & > video {
         cursor: hand;
-        border-radius: $borderRadius;
+        border-radius: 8px;
         object-fit: cover;
         overflow: hidden;
     }

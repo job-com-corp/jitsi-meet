@@ -1,3 +1,4 @@
+/* global APP */
 import throttle from 'lodash/throttle';
 
 import { IStore } from '../app/types';
@@ -20,6 +21,11 @@ import {
     SILENT_LEFT_THRESHOLD
 } from './constants';
 import { INotificationProps } from './types';
+import i18next from 'i18next';
+
+
+declare var APP: Object;
+declare var interfaceConfig: Object;
 
 /**
  * Function that returns notification timeout value based on notification timeout type.
@@ -98,6 +104,18 @@ export function setNotificationsEnabled(enabled: boolean) {
  * @returns {Object}
  */
 export function showErrorNotification(props: INotificationProps, type?: string) {
+    if (typeof APP !== undefined) {
+        const notificationProps = {
+            type: props.appearance || 'default',
+            // @ts-ignore
+            title: props.title || i18next.t(props.titleKey, props.titleArguments),
+                        // @ts-ignore
+            description: props.description || i18next.t(props.descriptionKey, props.descriptionArguments)
+        }
+        // @ts-ignore
+        APP.API.notifyExternal(notificationProps);
+    }
+    
     return showNotification({
         ...props,
         appearance: NOTIFICATION_TYPE.ERROR
@@ -126,6 +144,7 @@ export function showNotification(props: INotificationProps = {}, type?: string) 
                 || notifications.includes(titleKey ?? ''));
 
         if (typeof APP !== 'undefined') {
+            // @ts-ignore
             APP.API.notifyNotificationTriggered(titleKey, descriptionKey);
         }
 

@@ -80,6 +80,7 @@ import {
     isWhiteboardParticipant
 } from './functions';
 import logger from './logger';
+import { TALK_WHILE_MUTED } from '../../talk-while-muted/actionTypes';
 import { PARTICIPANT_JOINED_FILE, PARTICIPANT_LEFT_FILE } from './sounds';
 import { IJitsiParticipant } from './types';
 
@@ -223,7 +224,13 @@ MiddlewareRegistry.register(store => next => action => {
                 localRecording: recording
             }));
         }
+        break;
+    }
 
+    case TALK_WHILE_MUTED: {
+        if (typeof APP !== 'undefined') {
+            APP.API.notifyTalkWhileMuted();
+        }
         break;
     }
 

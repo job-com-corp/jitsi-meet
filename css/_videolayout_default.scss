@@ -1,3 +1,5 @@
+$participantNameColor: red;
+
 #videoconference_page {
     min-height: 100%;
     position: relative;
@@ -60,7 +62,7 @@
 
 #localVideoWrapper video,
 #localVideoWrapper object {
-    border-radius: $borderRadius !important;
+    border-radius: 8px !important;
     cursor: hand;
     object-fit: cover;
 }
@@ -114,6 +116,18 @@
     margin: 0 !important;
 }
 
+#largeVideoContainer::after {
+    content: ' ';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(0deg,rgba(0,0,0,.5) .09%,transparent 34.44%),linear-gradient(180deg,rgba(0,0,0,.5) .09%,transparent 34.44%);
+}
+
 #largeVideoWrapper {
     box-shadow: 0 0 20px -2px #444;
 }
@@ -157,6 +171,15 @@
 
 #etherpad {
     z-index: $zindex0;
+}
+
+/**
+ * Positions video thumbnail display name and editor.
+ */
+#alwaysOnTop .displayname,
+.videocontainer .displayname,
+.videocontainer .editdisplayname {
+    color: $participantNameColor;
 }
 
 #alwaysOnTop .displayname {
@@ -321,6 +344,36 @@
 .display-video {
     .avatar-container {
         visibility: hidden;
+    }
+
+    .displayNameContainer {
+        visibility: visible;
+    }
+
+    .videocontainer__hoverOverlay {
+        visibility: hidden;
+        opacity: 0;
+        transition: visibility 0s linear .3s, opacity .3s ease-in-out;
+    }
+
+    video {
+        visibility: visible;
+    }
+}
+
+.display-name-on-video {
+    .avatar-container {
+        visibility: hidden;
+    }
+
+    .displayNameContainer {
+        visibility: visible;
+    }
+
+    .videocontainer__hoverOverlay {
+        visibility: visible;
+        opacity: 1;
+        transition: visibility 0s linear, opacity .3s ease-in-out;
     }
 
     video {

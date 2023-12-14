@@ -35,7 +35,8 @@ export function connect(id?: string, password?: string) {
                     }
                 })
                 .then(j => j && dispatch(setJWT(j)))
-                .then(() => dispatch(_connectInternal(id, password)));
+                .then(() => dispatch(_connectInternal(id, password)))
+                .then(() => {APP.API.notifyInitializationDone()})
         }
 
         // used by jibri

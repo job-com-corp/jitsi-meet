@@ -84,6 +84,14 @@ UI.start = function() {
         document.body.style.backgroundColor = alphaColor;
     }
 
+    if (interfaceConfig.hideNotifications) {
+        APP.store.dispatch(setNotificationsEnabled(false));
+    }
+
+    if (interfaceConfig.filmStripOnly) {
+        $('body').addClass('filmstrip-only');
+    }
+
     if (config.iAmRecorder) {
         // in case of iAmSipGateway keep local video visible
         if (!config.iAmSipGateway) {
