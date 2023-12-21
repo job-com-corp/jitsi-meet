@@ -123,7 +123,8 @@ import {
     replaceLocalTrack,
     toggleScreensharing as toggleScreensharingA,
     trackAdded,
-    trackRemoved
+    trackRemoved,
+    trackAudioLevelChanged
 } from './react/features/base/tracks/actions';
 import {
     createLocalTracksF,
@@ -583,7 +584,7 @@ export default {
             // remove in the future
             logger.log('TRACKS CREATED', tracks);
             logger.log('ERRORS', errors);
-            APP.store.dispatch(toggleSlowGUMOverlay(false));
+            // APP.store.dispatch(toggleSlowGUMOverlay(false));
             APP.store.dispatch(notifyMediaPermissionsGranted({
                 audio: isGranted('audio'),
                 video: isGranted('video')

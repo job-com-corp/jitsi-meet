@@ -126,7 +126,6 @@ const events = {
     'feedback-prompt-displayed': 'feedbackPromptDisplayed',
     'filmstrip-display-changed': 'filmstripDisplayChanged',
     'incoming-message': 'incomingMessage',
-    'initialized': 'initialized',
     'knocking-participant': 'knockingParticipant',
     'log': 'log',
     'mic-error': 'micError',
