@@ -1,7 +1,7 @@
 /* global APP */
-import Logger from '@jitsi/logger';
-
 import { BrowserDetection } from '@jitsi/js-utils';
+import Logger from '@jitsi/logger';
+import i18next from 'i18next';
 
 import { createApiEvent } from '../../react/features/analytics/AnalyticsEvents';
 import { sendAnalytics } from '../../react/features/analytics/functions';
@@ -28,6 +28,7 @@ import {
 import { getCurrentConference, isP2pActive } from '../../react/features/base/conference/functions';
 import { overwriteConfig } from '../../react/features/base/config/actions';
 import { getWhitelistedJSON } from '../../react/features/base/config/functions.any';
+import { getAudioInputDeviceData } from '../../react/features/base/devices/functions.web';
 import { toggleDialog } from '../../react/features/base/dialog/actions';
 import { isSupportedBrowser } from '../../react/features/base/environment/environment';
 import { parseJWTFromURLParams } from '../../react/features/base/jwt/functions';
@@ -55,7 +56,6 @@ import { getDisplayName } from '../../react/features/base/settings/functions.web
 import { setCameraFacingMode } from '../../react/features/base/tracks/actions.web';
 import { CAMERA_FACING_MODE_MESSAGE } from '../../react/features/base/tracks/constants';
 import { getLocalJitsiVideoTrack } from '../../react/features/base/tracks/functions';
-import { toggleBackgroundEffect } from '../../react/features/virtual-background/actions';
 import {
     autoAssignToBreakoutRooms,
     closeBreakoutRoom,
@@ -96,6 +96,7 @@ import { answerKnockingParticipant, toggleLobbyMode } from '../../react/features
 import { setNoiseSuppressionEnabled } from '../../react/features/noise-suppression/actions';
 import { hideNotification, showNotification } from '../../react/features/notifications/actions';
 import { NOTIFICATION_TIMEOUT_TYPE, NOTIFICATION_TYPE } from '../../react/features/notifications/constants';
+import { mediaPermissionPromptVisibilityChanged } from '../../react/features/overlay/actions';
 import {
     close as closeParticipantsPane,
     open as openParticipantsPane
@@ -110,6 +111,7 @@ import { toggleScreenshotCaptureSummary } from '../../react/features/screenshot-
 import { isScreenshotCaptureEnabled } from '../../react/features/screenshot-capture/functions';
 import SettingsDialog from '../../react/features/settings/components/web/SettingsDialog';
 import { SETTINGS_TABS } from '../../react/features/settings/constants';
+import { createLocalAudioTracks } from '../../react/features/settings/functions.web';
 import { playSharedVideo, stopSharedVideo } from '../../react/features/shared-video/actions.any';
 import { extractYoutubeIdOrURL } from '../../react/features/shared-video/functions';
 import { setRequestingSubtitles, toggleRequestingSubtitles } from '../../react/features/subtitles/actions';
@@ -117,16 +119,15 @@ import { isAudioMuteButtonDisabled } from '../../react/features/toolbox/function
 import { setTileView, toggleTileView } from '../../react/features/video-layout/actions.any';
 import { muteAllParticipants } from '../../react/features/video-menu/actions';
 import { setVideoQuality } from '../../react/features/video-quality/actions';
+import { toggleBackgroundEffect } from '../../react/features/virtual-background/actions';
 import { toggleWhiteboard } from '../../react/features/whiteboard/actions.any';
 import { getJitsiMeetTransport } from '../transport';
-import { mediaPermissionPromptVisibilityChanged } from '../../react/features/overlay/actions';
 
 import {
     API_ID,
     ENDPOINT_TEXT_MESSAGE_NAME
 } from './constants';
 
-import i18next from 'i18next';
 
 const logger = Logger.getLogger(__filename);
 
@@ -157,6 +158,11 @@ let audioAvailable = true;
  * @type {boolean}
  */
 let videoAvailable = true;
+
+/**
+ * Cached audio tracks.
+ */
+const jbTracksCache = [];
 
 /**
  * Initializes supported commands.
@@ -390,11 +396,6 @@ function initCommands() {
             logger.log('Audio toggle: API command received');
             APP.conference.toggleAudioMuted(false /* no UI */);
         },
-        'toggle-subtitles': () => {
-            sendAnalytics(createApiEvent('toggle-subtitles'));
-            logger.log('Subtitles toggle: API command received');
-            APP.store.dispatch(toggleRequestingSubtitles());
-        },
         'toggle-video': () => {
             sendAnalytics(createApiEvent('toggle-video'));
             logger.log('Video toggle: API command received');
@@ -495,6 +496,7 @@ function initCommands() {
             APP.store.dispatch(setNoiseSuppressionEnabled(options.enabled));
         },
         'toggle-subtitles': () => {
+            sendAnalytics(createApiEvent('toggle-subtitles'));
             APP.store.dispatch(toggleRequestingSubtitles());
         },
         'set-subtitles': enabled => {
@@ -579,6 +581,35 @@ function initCommands() {
             APP.store.dispatch(setVideoQuality(frameHeight));
         },
 
+        'start-measuring-volume-levels': async () => {
+            const state = APP.store.getState();
+            const JitsiTrackEvents = JitsiMeetJS.events.track;
+            const microphoneDevices = getAudioInputDeviceData(state) ?? [];
+            const newAudioTracks = await createLocalAudioTracks(microphoneDevices, 5000);
+
+            disposeCachedAudioTracks();
+            newAudioTracks.forEach(({ jitsiTrack }) => {
+                if (jitsiTrack) {
+                    const onAudioLevelChanged = audioLevel => APP.API.notifyAudioLevelChanged({
+                        deviceId: jitsiTrack.deviceId,
+                        audioLevel
+                    });
+
+                    jitsiTrack.on(
+                        JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED,
+                        onAudioLevelChanged
+                    );
+
+                    jbTracksCache[jitsiTrack.deviceId] = {
+                        subscription: onAudioLevelChanged,
+                        jitsiTrack
+                    };
+                }
+            });
+        },
+        'stop-measuring-volume-levels': () => {
+            disposeCachedAudioTracks();
+        },
         'start-share-video': url => {
             logger.debug('Share video command received');
             sendAnalytics(createApiEvent('share.video.start'));
@@ -863,13 +894,14 @@ function initCommands() {
         'toggle-whiteboard': () => {
             APP.store.dispatch(toggleWhiteboard());
         },
-        'play-test-sound': (deviceId) => {
+        'play-test-sound': deviceId => {
             const audio = new Audio();
+
             audio.src = TEST_SOUND_PATH;
 
             audio.setSinkId(deviceId)
                 .then(() => audio.play())
-                .catch( err => logger.error('Could not set sink id', err));
+                .catch(err => logger.error('Could not set sink id', err));
         }
     };
     transport.on('event', ({ data, name }) => {
@@ -1030,15 +1062,11 @@ function initCommands() {
             break;
         }
         case 'get-speaker-stats': {
-            console.log("API - get-speaker-stats");
-            console.log("API - speaker stats", APP.conference.getSpeakerStats());
-
             const stats = createSpeakerStats(APP.conference.getSpeakerStats());
-            console.log("API - get-speaker-stats", stats);
 
             callback(stats);
             break;
-                }
+        }
         default:
             callback({ error: new Error('UnknownRequestError') });
 
@@ -1049,18 +1077,60 @@ function initCommands() {
     });
 }
 
+/**
+ * Dispose cached audio tracks.
+ *
+ * @returns {void}
+ */
+function disposeCachedAudioTracks() {
+    try {
+        const JitsiTrackEvents = JitsiMeetJS.events.track;
+
+        Object.keys(jbTracksCache).forEach(deviceId => {
+
+            const { jitsiTrack, subscription } = jbTracksCache[deviceId];
+
+            if (jitsiTrack) {
+                jitsiTrack.off(
+                    JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED,
+                    subscription
+                );
+                jitsiTrack?.dispose();
+                delete jbTracksCache[deviceId];
+            }
+        });
+    } catch (err) {
+        logger.error('Failed to dispose old tracks', err);
+    }
+}
+
+
+/**
+ * Create speaker stats.
+ *
+ * @param {Object} stats -
+ * @returns {Object}
+ */
 function createSpeakerStats(stats) {
     const userIds = Object.keys(stats);
     const speakerStats = userIds.map(userId => {
         const userStats = createSpeakerStatsItem(stats[userId]);
 
         return {
-            ...userStats, userId
+            ...userStats,
+            userId
         };
     });
-    return speakerStats
+
+    return speakerStats;
 }
 
+/**
+ * Create a speaker stats item.
+ *
+ * @param {Object} statsModel -
+ * @returns {Object}
+ */
 function createSpeakerStatsItem(statsModel) {
     if (!statsModel) {
         return null;
@@ -1081,11 +1151,15 @@ function createSpeakerStatsItem(statsModel) {
         displayName = localDisplayName;
         displayName = displayName ? `${displayName} (${meString})` : meString;
     } else {
+        // eslint-disable-next-line no-undef
         displayName = statsModel.getDisplayName() || interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;
     }
 
     return {
-        displayName, dominantSpeakerTime, hasLeft, isDominantSpeaker
+        displayName,
+        dominantSpeakerTime,
+        hasLeft,
+        isDominantSpeaker
     };
 }
 
@@ -1218,9 +1292,9 @@ class API {
      * @param {{audio: boolean, video: boolean}} permissions - Permissions per device type.
      * @returns {void}
      */
-    notifyPermissionsGranted(permissions) {
+    notifyPermissionsChanged(permissions) {
         this._sendEvent({
-            name: 'permissions-granted',
+            name: 'permissions-changed',
             permissions
         });
     }

@@ -70,6 +70,8 @@ const commands = {
     setVideoQuality: 'set-video-quality',
     showNotification: 'show-notification',
     startRecording: 'start-recording',
+    startMeasuringVolumeLevels: 'start-measuring-volume-levels',
+    stopMeasuringVolumeLevels: 'stop-measuring-volume-levels',
     startShareVideo: 'start-share-video',
     stopRecording: 'stop-recording',
     stopShareVideo: 'stop-share-video',
@@ -146,7 +148,7 @@ const events = {
     'participants-pane-toggled': 'participantsPaneToggled',
     'password-required': 'passwordRequired',
     'peer-connection-failure': 'peerConnectionFailure',
-    'permissions-granted': 'permissionsGranted',
+    'permissions-changed': 'permissionsChanged',
     'prejoin-screen-loaded': 'prejoinScreenLoaded',
     'proxy-connection-event': 'proxyConnectionEvent',
     'raise-hand-updated': 'raiseHandUpdated',
@@ -628,7 +630,7 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
             case 'participant-joined': {
                 this._participants[userID] = this._participants[userID] || {};
                 this._participants[userID].displayName = data.displayName;
-                this._participants[userID].email = data.email || "";
+                this._participants[userID].email = data.email || '';
                 this._participants[userID].formattedDisplayName
                     = data.formattedDisplayName;
                 changeParticipantNumber(this, 1);
@@ -1495,10 +1497,9 @@ export default class JitsiMeetExternalAPI extends EventEmitter {
     /**
      * Returns conference speaker stats.
      *
-     * @returns {Promise<Object>} Resolves with speaker stats and rejects on failure
+     * @returns {Promise<Object>} Resolves with speaker stats and rejects on failure.
      */
     getSpeakerStats() {
-        console.log("CALL external_api - getSpeakerStats");
         return this._transport.sendRequest({
             name: 'get-speaker-stats'
         });

@@ -33,7 +33,6 @@ import {
     TRACK_UPDATED,
     TRACK_WILL_CREATE,
     TRACK_RECEIVING_DATA_STATUS,
-    TRACK_AUDIO_LEVEL_CHANGED,
 } from './actionTypes';
 import {
     createLocalTracksF,
@@ -532,25 +531,6 @@ export function trackMuteUnmuteFailed(track: any, wasMuting: boolean): {
         type: TRACK_MUTE_UNMUTE_FAILED,
         track,
         wasMuting
-        };
-}
-
-/**
- * Create an action for when a track's audio level changes.
- *
- * @param  {string} deviceId - device ID.
- * @param  {number} audioLevel - audio level.
- * @returns {{
- *     type: TRACK_AUDIO_LEVEL_CHANGED,
- *     deviceId: string,
- *     audioLevel: number
- * }}
- */
-export function trackAudioLevelChanged(deviceId: string, audioLevel: number) {
-    return {
-        type: TRACK_AUDIO_LEVEL_CHANGED,
-        deviceId,
-        audioLevel
     };
 }
 
