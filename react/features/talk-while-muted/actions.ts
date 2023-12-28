@@ -18,8 +18,13 @@ export function setCurrentNotificationUid(uid?: string) {
     };
 }
 
+/**
+ * Emit talk while muted event.
+ *
+ * @returns {void}
+ */
 export function talkWhileMuted() {
-  return {
-    type: TALK_WHILE_MUTED
-  }
+    return {
+        type: TALK_WHILE_MUTED
+    };
 }

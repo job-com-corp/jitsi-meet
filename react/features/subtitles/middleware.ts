@@ -158,20 +158,16 @@ function _endpointMessageReceived({ dispatch, getState }: IStore, next: Function
 
             // Notify the external API too.
             if (typeof APP !== 'undefined') {
+                const conferenceTime = getConferenceTimestamp(APP.store.getState());
+
                 APP.API.notifyTranscriptionChunkReceived({
-                    messageID: transcriptMessageID,
-                    ...newTranscriptMessage
-                });
-                APP.API.notifyTranscriptionMessage({
                     id: transcriptMessageID,
-                    // @ts-ignore
-                    timestamp: new Date().getTime() - getConferenceTimestamp(APP.store.getState()),
+                    timestamp: conferenceTime ? new Date().getTime() - conferenceTime : undefined,
                     message: {
                         ...newTranscriptMessage,
                         participant: json.participant
                     }
-                }
-                );
+                });
             }
             dispatch(
                 updateTranscriptMessage(

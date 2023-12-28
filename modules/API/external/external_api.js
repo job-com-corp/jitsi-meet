@@ -171,8 +171,7 @@ const events = {
     'whiteboard-status-changed': 'whiteboardStatusChanged',
     'track-receiving-data-status': 'trackReceivingDataStatus',
     'talk-while-muted': 'talkWhileMuted',
-    'notification-raised': 'notificationRaised',
-    'transcription-message': 'transcriptionMessage'
+    'notification-raised': 'notificationRaised'
 };
 
 const requests = {

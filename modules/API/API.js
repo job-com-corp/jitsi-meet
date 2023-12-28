@@ -114,7 +114,11 @@ import { SETTINGS_TABS } from '../../react/features/settings/constants';
 import { createLocalAudioTracks } from '../../react/features/settings/functions.web';
 import { playSharedVideo, stopSharedVideo } from '../../react/features/shared-video/actions.any';
 import { extractYoutubeIdOrURL } from '../../react/features/shared-video/functions';
-import { setRequestingSubtitles, toggleRequestingSubtitles } from '../../react/features/subtitles/actions';
+import {
+    setRequestingSubtitles,
+    toggleRequestingSubtitles,
+    updateTranslationLanguage
+} from '../../react/features/subtitles/actions';
 import { isAudioMuteButtonDisabled } from '../../react/features/toolbox/functions';
 import { setTileView, toggleTileView } from '../../react/features/video-layout/actions.any';
 import { muteAllParticipants } from '../../react/features/video-menu/actions';
@@ -496,10 +500,12 @@ function initCommands() {
             APP.store.dispatch(setNoiseSuppressionEnabled(options.enabled));
         },
         'toggle-subtitles': () => {
-            sendAnalytics(createApiEvent('toggle-subtitles'));
             APP.store.dispatch(toggleRequestingSubtitles());
         },
         'set-subtitles': enabled => {
+            APP.store.dispatch(
+                updateTranslationLanguage(enabled ? 'translation-languages:en' : 'transcribing.subtitlesOff')
+            );
             APP.store.dispatch(setRequestingSubtitles(enabled));
         },
         'toggle-tile-view': () => {
@@ -2381,19 +2387,6 @@ class API {
         this._sendEvent({
             name: 'notification-raised',
             props
-        });
-    }
-
-    /**
-     * Notify external application of each transcription message.
-     *
-     * @param {Object} message - Transcription message.
-     * @returns {void}
-     */
-    notifyTranscriptionMessage(message) {
-        this._sendEvent({
-            name: 'transcription-message',
-            message
         });
     }
 }

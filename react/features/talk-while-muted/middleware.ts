@@ -44,6 +44,7 @@ MiddlewareRegistry.register(store => next => action => {
             JitsiConferenceEvents.TALK_WHILE_MUTED, async () => {
                 const state = getState();
                 const local = getLocalParticipant(state);
+
                 // Display the talk while muted notification only when the audio button is not disabled.
                 if (!isAudioMuteButtonDisabled(state)) {
                     dispatch(talkWhileMuted());
