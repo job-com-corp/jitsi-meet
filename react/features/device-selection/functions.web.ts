@@ -179,9 +179,9 @@ export function processExternalDeviceRequest( // eslint-disable-line max-params
                     videoInput: undefined
                 };
                 const currentlyUsedDeviceIds = new Set([
-                    getAudioOutputDeviceId(),
-                    settings.micDeviceId,
-                    settings.cameraDeviceId
+                    getUserSelectedOutputDeviceId(state),
+                    settings.micDeviceId ?? getUserSelectedMicDeviceId(state),
+                    settings.cameraDeviceId ?? getUserSelectedCameraDeviceId(state)
                 ]);
 
                 devices.forEach(device => {
@@ -201,7 +201,6 @@ export function processExternalDeviceRequest( // eslint-disable-line max-params
                         }
                     }
                 });
-
                 responseCallback(deviceDescriptions);
             } else {
                 // The labels are not available if the A/V permissions are
