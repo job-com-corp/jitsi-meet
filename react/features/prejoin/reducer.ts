@@ -28,7 +28,7 @@ const DEFAULT_STATE = {
     name: '',
     rawError: '',
     showPrejoin: true,
-    skipPrejoinOnReload: false,
+    skipPrejoinOnReload: true,
     showJoinByPhoneDialog: false
 };
 
