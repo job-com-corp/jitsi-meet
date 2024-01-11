@@ -1,12 +1,9 @@
-$popoverFontColor: red;
-$inlayColorBg: white;
-
 .inlay {
     margin: 14% auto 0;
     @include border-radius(20px);
     padding: 20px 50px;
-    color: $popoverFontColor;
-    background: $inlayColorBg;
+    color: #fff;
+    background: lighten(#474747, 20%);
     max-width: 255px;
     position: relative;
     @media (max-width: 600px) {
@@ -14,7 +11,7 @@ $inlayColorBg: white;
     }
 
     &__title {
-        color: $popoverFontColor;
+        color: #fff;
         margin: 0 0 10px;
         font-weight: bold;
         font-size: 16px;
@@ -44,11 +41,11 @@ $inlayColorBg: white;
     &__warning_icon {
         position: absolute;
         left: 20px;
-        top: 23px;
+        top: 20px;
 
         svg {
-            width: 16px;
-            height: 16px;
+            width: 20px;
+            height: 20px;
             path {
                 fill: #F2994A;
             }

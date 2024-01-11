@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { IReduxState } from '../../../app/types';
 import { translate, translateToHTML } from '../../../base/i18n/functions';
+import { IconWarningCircle } from '../../../base/icons/svg';
 
 import AbstractUserMediaPermissionsOverlay, { abstractMapStateToProps }
     from './AbstractUserMediaPermissionsOverlay';
@@ -28,8 +29,11 @@ class UserMediaPermissionsOverlay extends AbstractUserMediaPermissionsOverlay {
         } : {};
 
         return (
-            <OverlayFrame style = { style } className="permissions-overlay">
+            <OverlayFrame
+                className = 'permissions-overlay'
+                style = { style }>
                 <div className = 'inlay'>
+                    <div className = 'inlay__warning_icon'><IconWarningCircle /></div>
                     <span className = 'inlay__icon icon-microphone' />
                     <span className = 'inlay__icon icon-camera' />
                     <h3

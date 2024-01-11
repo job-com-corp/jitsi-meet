@@ -40,7 +40,10 @@ export default class OverlayFrame extends Component<IProps> {
     render() {
         return (
             <div
-                className = { `${this.props.isLightOverlay ? 'overlay__container-light' : 'overlay__container'} ${this.props.className}` }
+                className = {
+                    `${this.props.isLightOverlay ? 'overlay__container-light' : 'overlay__container'}
+                     ${this.props.className}`
+                }
                 id = 'overlay'
                 style = { this.props.style }>
                 <div className = { 'overlay__content' }>
