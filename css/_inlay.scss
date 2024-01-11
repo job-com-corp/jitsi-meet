@@ -3,7 +3,7 @@
     @include border-radius(20px);
     padding: 20px 50px;
     color: #fff;
-    background: lighten(#474747, 20%);
+    background: linear-gradient(0deg,rgba(242,153,74,.1),rgba(242,153,74,.1)),#fff;
     max-width: 255px;
     position: relative;
     @media (max-width: 600px) {
@@ -11,7 +11,7 @@
     }
 
     &__title {
-        color: #fff;
+        color: #202124;
         margin: 0 0 10px;
         font-weight: bold;
         font-size: 16px;
@@ -23,7 +23,7 @@
     }
 
     &__text {
-        color: #ffffff;
+        color: #202124;
         display: block;
         font-size: 14px;
         line-height: 18px;
