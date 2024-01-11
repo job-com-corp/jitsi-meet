@@ -398,11 +398,19 @@ function initCommands() {
         'toggle-audio': () => {
             sendAnalytics(createApiEvent('toggle-audio'));
             logger.log('Audio toggle: API command received');
+            const state = APP.store.getState();
+            const { startWithAudioMuted: currentAudioMuted } = state['features/base/settings'];
+
+            APP.store.dispatch(updateSettings({ startWithAudioMuted: !currentAudioMuted }));
             APP.conference.toggleAudioMuted(false /* no UI */);
         },
         'toggle-video': () => {
             sendAnalytics(createApiEvent('toggle-video'));
             logger.log('Video toggle: API command received');
+            const state = APP.store.getState();
+            const { startWithVideoMuted: currentVideoMuted } = state['features/base/settings'];
+
+            APP.store.dispatch(updateSettings({ startWithVideoMuted: !currentVideoMuted }));
             APP.conference.toggleVideoMuted(false /* no UI */, true /* ensure track */);
         },
         'set-video-background-effect': options => {
