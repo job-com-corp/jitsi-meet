@@ -4,6 +4,8 @@ local http = require "net.http";
 -- invite will perform the trigger for external call invites.
 -- This trigger is left unimplemented. The implementation is expected
 -- to be specific to the deployment.
+local json = require "util.json";
+local http = require "net.http";
 local function invite(stanza, url, call_id)
     module:log(
         "warn",
@@ -87,6 +89,7 @@ local function speaker_stats(room, speakerStats, requestURL)
         end);
     end
 end
+
 
 local ext_events = {
     missed = missed,
