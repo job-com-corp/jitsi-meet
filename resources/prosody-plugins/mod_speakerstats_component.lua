@@ -79,15 +79,16 @@ function on_message(event)
         local from = event.stanza.attr.from;
 
         local occupant = room:get_occupant_by_real_jid(from);
+        local nick = jid_resource(occupant.nick);
         if not occupant then
             module:log("warn", "No occupant %s found for %s", from, roomAddress);
             return false;
         end
 
-        local newDominantSpeaker = roomSpeakerStats[occupant.jid];
+        local newDominantSpeaker = roomSpeakerStats[nick];
         local oldDominantSpeakerId = roomSpeakerStats['dominantSpeakerId'];
 
-        if oldDominantSpeakerId and occupant.jid ~= oldDominantSpeakerId then
+        if oldDominantSpeakerId and nick ~= oldDominantSpeakerId then
             local oldDominantSpeaker = roomSpeakerStats[oldDominantSpeakerId];
             if oldDominantSpeaker then
                 oldDominantSpeaker:setDominantSpeaker(false, false);
@@ -98,7 +99,7 @@ function on_message(event)
             newDominantSpeaker:setDominantSpeaker(true, silence);
         end
 
-        room.speakerStats['dominantSpeakerId'] = occupant.jid;
+        room.speakerStats['dominantSpeakerId'] = nick;
     end
 
     local newFaceLandmarks = event.stanza:get_child('faceLandmarks', 'http://jitsi.org/jitmeet');
@@ -118,11 +119,11 @@ function on_message(event)
         local from = event.stanza.attr.from;
 
         local occupant = room:get_occupant_by_real_jid(from);
-        if not occupant or not room.speakerStats[occupant.jid] then
+        if not occupant or not room.speakerStats[nick] then
             module:log("warn", "No occupant %s found for %s", from, roomAddress);
             return false;
         end
-        local faceLandmarks = room.speakerStats[occupant.jid].faceLandmarks;
+        local faceLandmarks = room.speakerStats[nick].faceLandmarks;
         table.insert(faceLandmarks,
             {
                 faceExpression = newFaceLandmarks.attr.faceExpression,
@@ -138,8 +139,9 @@ end
 local SpeakerStats = {};
 SpeakerStats.__index = SpeakerStats;
 
-function new_SpeakerStats(nick, context_user)
+function new_SpeakerStats(nick, context_user, oldtotalDominantSpeakerTime)
     return setmetatable({
+        oldtotalDominantSpeakerTime = oldtotalDominantSpeakerTime or 0
         totalDominantSpeakerTime = 0;
         _dominantSpeakerStart = 0;
         _isSilent = false;
@@ -218,6 +220,14 @@ function breakout_room_created(event)
     room.speakerStats.sessionId = main_room._data.meetingId;
 end
 
+function getoldtotalDominantSpeakerTime(nick)
+    if room.speakerStats[nick] then
+        return room.speakerStats[nick].totalDominantSpeakerTime
+    else
+        return nil
+    end
+end
+
 -- Create SpeakerStats object for the joined user
 function occupant_joined(event)
     local occupant, room = event.occupant, event.room;
@@ -274,7 +284,10 @@ function occupant_joined(event)
         end
 
         local context_user = event.origin and event.origin.jitsi_meet_context_user or nil;
-        room.speakerStats[occupant.jid] = new_SpeakerStats(nick, context_user);
+        local oldtotalDominantSpeakerTime = getoldtotalDominantSpeakerTime(nick)
+        room.speakerStats[nick] = new_SpeakerStats(nick, context_user, oldtotalDominantSpeakerTime );
+        module:log("added speakerstats for nick ", nick, "CONTENT: ", room.speakerStats[nick])
+        module:log("TABLE NOW LOOKS LIKE: ",json.encode(room.speakerStats) )
     end
 end
 
@@ -292,8 +305,8 @@ function occupant_leaving(event)
     end
 
     local occupant = event.occupant;
-
-    local speakerStatsForOccupant = room.speakerStats[occupant.jid];
+    local nick = jid_resource(occupant.nick);
+    local speakerStatsForOccupant = room.speakerStats[nick];
     if speakerStatsForOccupant then
         speakerStatsForOccupant:setDominantSpeaker(false, false);
 
