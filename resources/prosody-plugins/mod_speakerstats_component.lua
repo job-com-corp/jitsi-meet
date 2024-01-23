@@ -177,8 +177,7 @@ SpeakerStats.__index = SpeakerStats;
 
 function new_SpeakerStats(nick, context_user, oldtotalDominantSpeakerTime)
     return setmetatable({
-        oldtotalDominantSpeakerTime = oldtotalDominantSpeakerTime or 0
-        totalDominantSpeakerTime = 0;
+        totalDominantSpeakerTime = oldtotalDominantSpeakerTime or 0;
         _dominantSpeakerStart = 0;
         _isSilent = false;
         _isDominantSpeaker = false;
@@ -256,7 +255,7 @@ function breakout_room_created(event)
     room.speakerStats.sessionId = main_room._data.meetingId;
 end
 
-function getoldtotalDominantSpeakerTime(nick)
+function getoldtotalDominantSpeakerTime(room, nick)
     if room.speakerStats[nick] then
         return room.speakerStats[nick].totalDominantSpeakerTime
     else
@@ -320,10 +319,10 @@ function occupant_joined(event)
         end
 
         local context_user = event.origin and event.origin.jitsi_meet_context_user or nil;
-        local oldtotalDominantSpeakerTime = getoldtotalDominantSpeakerTime(nick)
+        local oldtotalDominantSpeakerTime = getoldtotalDominantSpeakerTime(room, nick)
         room.speakerStats[nick] = new_SpeakerStats(nick, context_user, oldtotalDominantSpeakerTime );
-        module:log("added speakerstats for nick ", nick, "CONTENT: ", room.speakerStats[nick])
-        module:log("TABLE NOW LOOKS LIKE: ",json.encode(room.speakerStats) )
+        module:log("info", "added speakerstats for nick ", nick, "CONTENT: ", room.speakerStats[nick])
+        module:log("info", "TABLE NOW LOOKS LIKE: ",json.encode(room.speakerStats) )
     end
 end
 
