@@ -23,7 +23,6 @@ if muc_component_host == nil or muc_domain_base == nil then
     module:log("error", "No muc_component specified. No muc to operate on!");
     return;
 end
-log("info", "Starting speakerstats for %s", muc_component_host);
 local api_protocol = module:get_option("api_protocol");
 local api_domain = module:get_option("api_domain");
 local api_path = module:get_option("api_path");
@@ -46,24 +45,6 @@ local breakout_room_component_host = "breakout." .. muc_domain_base;
 module:log("info", "Starting speakerstats for %s", muc_component_host);
 
 local main_muc_service;
-
-local api_protocol = module:get_option("api_protocol");
-local api_domain = module:get_option("api_domain");
-local api_path = module:get_option("api_path");
-local is_posting_enabled = true;
-
--- Cannot proceed if "api_path" not configured
-if not api_path then
-    module:log("error", "Speaker stats api_path not specified. Posting of speaker stats is disabled.");
-    is_posting_enabled = false;
-end
-if not api_domain then
-    module:log("error", "Speaker stats api_domain not specified. Posting of speaker stats is disabled");
-    is_posting_enabled = false;
-end
-if not api_protocol then
-    api_protocol = "https";
-end
 
 local function is_admin(jid)
     return um_is_admin(jid, module.host);
@@ -101,24 +82,6 @@ local function get_main_room(breakout_room)
             breakout_room.main_room = room;
             return room;
         end
-    end
-end
-
-local function getPostRequestUrl(roomjid)
-    if is_posting_enabled then
-        local pos = string.find(roomjid, '@');
-        if pos > 0 then
-            local roomname = string.sub(roomjid, 1, pos - 1);
-            if string.len(roomname) > 32 then
-                local tenant = string.sub(roomname, 33);
-                local requestURL = api_protocol..'://'..tenant..'.'..api_domain..api_path;
-                return requestURL;
-            end
-        else
-            return nil;
-        end
-    else
-        return nil;
     end
 end
 
@@ -317,10 +280,10 @@ function occupant_joined(event)
         -- its local stats
         if next(room.speakerStats) ~= nil then
             local users_json = {};
-            for nick_index, values in pairs(room.speakerStats) do
+            for jid, values in pairs(room.speakerStats) do
                 -- skip reporting those without a nick('dominantSpeakerId')
                 -- and skip focus if sneaked into the table
-                if values and type(values) == 'table' and values.nick ~= nil and values.nick ~= 'focus' and nick_index ~= nick then
+                if values and type(values) == 'table' and values.nick ~= nil and values.nick ~= 'focus' then
                     local totalDominantSpeakerTime = values.totalDominantSpeakerTime;
                     local faceLandmarks = values.faceLandmarks;
                     if totalDominantSpeakerTime > 0 or room:get_occupant_jid(jid) == nil or values:isDominantSpeaker()
