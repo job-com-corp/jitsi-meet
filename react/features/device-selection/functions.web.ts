@@ -201,7 +201,6 @@ export function processExternalDeviceRequest( // eslint-disable-line max-params
                         }
                     }
                 });
-
                 responseCallback(deviceDescriptions);
             } else {
                 // The labels are not available if the A/V permissions are

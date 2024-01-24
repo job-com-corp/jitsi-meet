@@ -36,7 +36,8 @@ import {
     MIN_STAGE_VIEW_WIDTH,
     TILE_HORIZONTAL_MARGIN,
     TILE_VERTICAL_MARGIN,
-    TOP_FILMSTRIP_HEIGHT
+    TOP_FILMSTRIP_HEIGHT,
+    FILMSTRIP_TILE_VERTICAL_MARGIN,
 } from '../../constants';
 import {
     getVerticalViewMaxWidth,
@@ -747,7 +748,7 @@ class Filmstrip extends PureComponent <IProps, IState> {
             }
 
         } else if (_isVerticalFilmstrip) {
-            const itemSize = _thumbnailHeight + TILE_VERTICAL_MARGIN;
+            const itemSize = _thumbnailHeight + FILMSTRIP_TILE_VERTICAL_MARGIN;
             const isNotOverflowing = !_hasScroll;
 
             if (isNotOverflowing) {

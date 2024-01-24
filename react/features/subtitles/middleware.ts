@@ -2,6 +2,7 @@ import { AnyAction } from 'redux';
 
 import { IStore } from '../app/types';
 import MiddlewareRegistry from '../base/redux/MiddlewareRegistry';
+import { getConferenceTimestamp } from '../base/conference/functions';
 
 import {
     ENDPOINT_MESSAGE_RECEIVED,
@@ -168,11 +169,21 @@ function _endpointMessageReceived({ dispatch, getState }: IStore, next: Function
 
                 delete sanitizedTranscriptMessage.clearTimeOut;
 
+                const conferenceTime = getConferenceTimestamp(APP.store.getState());
+
                 APP.API.notifyTranscriptionChunkReceived({
-                    messageID: transcriptMessageID,
-                    ...sanitizedTranscriptMessage
+                    id: transcriptMessageID,
+                    timestamp: conferenceTime ? new Date().getTime() - conferenceTime : undefined,
+                    message: {
+                        ...sanitizedTranscriptMessage,
+                        participant: json.participant
+                    }
                 });
             }
+            dispatch(
+                updateTranscriptMessage(
+                    transcriptMessageID,
+                    newTranscriptMessage));
         }
     } catch (error) {
         logger.error('Error occurred while updating transcriptions\n', error);

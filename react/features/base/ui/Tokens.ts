@@ -12,7 +12,7 @@ export const colors = {
     primary04: '#0045B3',
     primary05: '#0056E0',
     primary06: '#246FE5',
-    primary07: '#4687ED',
+    primary07: '#154897',
     primary08: '#99BBF3',
     primary09: '#CCDDF9',
 

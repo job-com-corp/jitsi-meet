@@ -1,5 +1,7 @@
 /* global APP */
+import { BrowserDetection } from '@jitsi/js-utils';
 import Logger from '@jitsi/logger';
+import i18next from 'i18next';
 
 import { createApiEvent } from '../../react/features/analytics/AnalyticsEvents';
 import { sendAnalytics } from '../../react/features/analytics/functions';
@@ -26,6 +28,7 @@ import {
 import { getCurrentConference, isP2pActive } from '../../react/features/base/conference/functions';
 import { overwriteConfig } from '../../react/features/base/config/actions';
 import { getWhitelistedJSON } from '../../react/features/base/config/functions.any';
+import { getAudioInputDeviceData } from '../../react/features/base/devices/functions.web';
 import { toggleDialog } from '../../react/features/base/dialog/actions';
 import { isSupportedBrowser } from '../../react/features/base/environment/environment';
 import { parseJWTFromURLParams } from '../../react/features/base/jwt/functions';
@@ -52,6 +55,7 @@ import { updateSettings } from '../../react/features/base/settings/actions';
 import { getDisplayName } from '../../react/features/base/settings/functions.web';
 import { setCameraFacingMode } from '../../react/features/base/tracks/actions.web';
 import { CAMERA_FACING_MODE_MESSAGE } from '../../react/features/base/tracks/constants';
+import { getLocalJitsiVideoTrack } from '../../react/features/base/tracks/functions';
 import {
     autoAssignToBreakoutRooms,
     closeBreakoutRoom,
@@ -92,6 +96,7 @@ import { answerKnockingParticipant, toggleLobbyMode } from '../../react/features
 import { setNoiseSuppressionEnabled } from '../../react/features/noise-suppression/actions';
 import { hideNotification, showNotification } from '../../react/features/notifications/actions';
 import { NOTIFICATION_TIMEOUT_TYPE, NOTIFICATION_TYPE } from '../../react/features/notifications/constants';
+import { mediaPermissionPromptVisibilityChanged } from '../../react/features/overlay/actions';
 import {
     close as closeParticipantsPane,
     open as openParticipantsPane
@@ -106,13 +111,18 @@ import { toggleScreenshotCaptureSummary } from '../../react/features/screenshot-
 import { isScreenshotCaptureEnabled } from '../../react/features/screenshot-capture/functions';
 import SettingsDialog from '../../react/features/settings/components/web/SettingsDialog';
 import { SETTINGS_TABS } from '../../react/features/settings/constants';
+import { createLocalAudioTracks } from '../../react/features/settings/functions.web';
 import { playSharedVideo, stopSharedVideo } from '../../react/features/shared-video/actions.any';
 import { extractYoutubeIdOrURL } from '../../react/features/shared-video/functions';
-import { setRequestingSubtitles, toggleRequestingSubtitles } from '../../react/features/subtitles/actions';
+import {
+    setRequestingSubtitles,
+    toggleRequestingSubtitles
+} from '../../react/features/subtitles/actions';
 import { isAudioMuteButtonDisabled } from '../../react/features/toolbox/functions';
 import { setTileView, toggleTileView } from '../../react/features/video-layout/actions.any';
 import { muteAllParticipants } from '../../react/features/video-menu/actions';
 import { setVideoQuality } from '../../react/features/video-quality/actions';
+import { toggleBackgroundEffect } from '../../react/features/virtual-background/actions';
 import { toggleWhiteboard } from '../../react/features/whiteboard/actions.any';
 import { getJitsiMeetTransport } from '../transport';
 
@@ -121,7 +131,10 @@ import {
     ENDPOINT_TEXT_MESSAGE_NAME
 } from './constants';
 
+
 const logger = Logger.getLogger(__filename);
+
+const TEST_SOUND_PATH = 'sounds/ring.wav';
 
 /**
  * List of the available commands.
@@ -148,6 +161,11 @@ let audioAvailable = true;
  * @type {boolean}
  */
 let videoAvailable = true;
+
+/**
+ * Cached audio tracks.
+ */
+const jbTracksCache = [];
 
 /**
  * Initializes supported commands.
@@ -358,6 +376,11 @@ function initCommands() {
         'set-participant-volume': (participantId, volume) => {
             APP.store.dispatch(setVolume(participantId, volume));
         },
+        'toggle-media-permission-screen': (visible, title, text) => {
+            const browser = new BrowserDetection();
+
+            APP.store.dispatch(mediaPermissionPromptVisibilityChanged(visible, browser.getName(), title, text));
+        },
         'subject': subject => {
             sendAnalytics(createApiEvent('subject.changed'));
             APP.store.dispatch(setSubject(subject));
@@ -368,11 +391,26 @@ function initCommands() {
         },
         'toggle-audio': () => {
             sendAnalytics(createApiEvent('toggle-audio'));
+            logger.log('Audio toggle: API command received');
+            const state = APP.store.getState();
+            const { startWithAudioMuted: currentAudioMuted } = state['features/base/settings'];
+
+            APP.store.dispatch(updateSettings({ startWithAudioMuted: !currentAudioMuted }));
             APP.conference.toggleAudioMuted(false /* no UI */);
         },
         'toggle-video': () => {
             sendAnalytics(createApiEvent('toggle-video'));
+            logger.log('Video toggle: API command received');
+            const state = APP.store.getState();
+            const { startWithVideoMuted: currentVideoMuted } = state['features/base/settings'];
+
+            APP.store.dispatch(updateSettings({ startWithVideoMuted: !currentVideoMuted }));
             APP.conference.toggleVideoMuted(false /* no UI */, true /* ensure track */);
+        },
+        'set-video-background-effect': options => {
+            const jitsiTrack = getLocalJitsiVideoTrack(APP.store.getState());
+
+            APP.store.dispatch(toggleBackgroundEffect(options, jitsiTrack));
         },
         'toggle-film-strip': () => {
             sendAnalytics(createApiEvent('film.strip.toggled'));
@@ -540,6 +578,35 @@ function initCommands() {
         'set-video-quality': frameHeight => {
             sendAnalytics(createApiEvent('set.video.quality'));
             APP.store.dispatch(setVideoQuality(frameHeight));
+        },
+        'start-measuring-volume-levels': async () => {
+            const state = APP.store.getState();
+            const JitsiTrackEvents = JitsiMeetJS.events.track;
+            const microphoneDevices = getAudioInputDeviceData(state) ?? [];
+            const newAudioTracks = await createLocalAudioTracks(microphoneDevices, 5000);
+
+            disposeCachedAudioTracks();
+            newAudioTracks.forEach(({ jitsiTrack }) => {
+                if (jitsiTrack) {
+                    const onAudioLevelChanged = audioLevel => APP.API.notifyAudioLevelChanged({
+                        deviceId: jitsiTrack.deviceId,
+                        audioLevel
+                    });
+
+                    jitsiTrack.on(
+                        JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED,
+                        onAudioLevelChanged
+                    );
+
+                    jbTracksCache[jitsiTrack.deviceId] = {
+                        subscription: onAudioLevelChanged,
+                        jitsiTrack
+                    };
+                }
+            });
+        },
+        'stop-measuring-volume-levels': () => {
+            disposeCachedAudioTracks();
         },
         'start-share-video': url => {
             sendAnalytics(createApiEvent('share.video.start'));
@@ -825,6 +892,15 @@ function initCommands() {
         },
         'toggle-whiteboard': () => {
             APP.store.dispatch(toggleWhiteboard());
+        },
+        'play-test-sound': deviceId => {
+            const audio = new Audio();
+
+            audio.src = TEST_SOUND_PATH;
+
+            audio.setSinkId(deviceId)
+                .then(() => audio.play())
+                .catch(err => logger.error('Could not set sink id', err));
         }
     };
     transport.on('event', ({ data, name }) => {
@@ -985,6 +1061,12 @@ function initCommands() {
             callback(true);
             break;
         }
+        case 'get-speaker-stats': {
+            const stats = createSpeakerStats(APP.conference.getSpeakerStats());
+
+            callback(stats);
+            break;
+        }
         default:
             callback({ error: new Error('UnknownRequestError') });
 
@@ -993,6 +1075,92 @@ function initCommands() {
 
         return true;
     });
+}
+
+/**
+ * Dispose cached audio tracks.
+ *
+ * @returns {void}
+ */
+function disposeCachedAudioTracks() {
+    try {
+        const JitsiTrackEvents = JitsiMeetJS.events.track;
+
+        Object.keys(jbTracksCache).forEach(deviceId => {
+
+            const { jitsiTrack, subscription } = jbTracksCache[deviceId];
+
+            if (jitsiTrack) {
+                jitsiTrack.off(
+                    JitsiTrackEvents.TRACK_AUDIO_LEVEL_CHANGED,
+                    subscription
+                );
+                jitsiTrack?.dispose();
+                delete jbTracksCache[deviceId];
+            }
+        });
+    } catch (err) {
+        logger.error('Failed to dispose old tracks', err);
+    }
+}
+
+
+/**
+ * Create speaker stats.
+ *
+ * @param {Object} stats -
+ * @returns {Object}
+ */
+function createSpeakerStats(stats) {
+    const userIds = Object.keys(stats);
+    const speakerStats = userIds.map(userId => {
+        const userStats = createSpeakerStatsItem(stats[userId]);
+
+        return {
+            ...userStats,
+            userId
+        };
+    });
+
+    return speakerStats;
+}
+
+/**
+ * Create a speaker stats item.
+ *
+ * @param {Object} statsModel -
+ * @returns {Object}
+ */
+function createSpeakerStatsItem(statsModel) {
+    if (!statsModel) {
+        return null;
+    }
+
+    const localParticipant = getLocalParticipant(APP.store.getState());
+    const localDisplayName = localParticipant && localParticipant.name;
+
+    const isDominantSpeaker = statsModel.isDominantSpeaker();
+    const dominantSpeakerTime = statsModel.getTotalDominantSpeakerTime();
+    const hasLeft = statsModel.hasLeft();
+
+    let displayName;
+
+    if (statsModel.isLocalStats()) {
+        const meString = i18next.t('me');
+
+        displayName = localDisplayName;
+        displayName = displayName ? `${displayName} (${meString})` : meString;
+    } else {
+        // eslint-disable-next-line no-undef
+        displayName = statsModel.getDisplayName() || interfaceConfig.DEFAULT_REMOTE_DISPLAY_NAME;
+    }
+
+    return {
+        displayName,
+        dominantSpeakerTime,
+        hasLeft,
+        isDominantSpeaker
+    };
 }
 
 /**
@@ -1114,6 +1282,20 @@ class API {
         this._sendEvent({
             name: 'large-video-visibility-changed',
             isVisible: !isHidden
+        });
+    }
+
+    /**
+     * Notify external application (if API is enabled) that media devices
+     * permissions are granted or not.
+     *
+     * @param {{audio: boolean, video: boolean}} permissions - Permissions per device type.
+     * @returns {void}
+     */
+    notifyPermissionsChanged(permissions) {
+        this._sendEvent({
+            name: 'permissions-changed',
+            permissions
         });
     }
 
@@ -1617,6 +1799,43 @@ class API {
         this._sendEvent({
             name: 'audio-mute-status-changed',
             muted
+        });
+    }
+
+    /**
+     * Notify external application (if API is enabled) that audio input device level has changed.
+     *
+     * @param {Object} data - Track meta and audio level.
+     * @returns {void}
+     */
+    notifyAudioLevelChanged(data) {
+        this._sendEvent({
+            name: 'audio-level-changed',
+            data
+        });
+    }
+
+    /**
+     * Notify external application (if API is enabled) that audio input device level does not receive data.
+     *
+     * @param {Object} data - Device id and is receiving data flag.
+     * @returns {void}
+     */
+    notifyTrackReceivingStatus(data) {
+        this._sendEvent({
+            name: 'track-receiving-data-status',
+            data
+        });
+    }
+
+    /**
+     * Notify external application (if API is enabled) that a user is talking while he/she is muted.
+     *
+     * @returns {void}
+     */
+    notifyTalkWhileMuted() {
+        this._sendEvent({
+            name: 'talk-while-muted'
         });
     }
 
@@ -2150,6 +2369,19 @@ class API {
         if (this._enabled) {
             this._enabled = false;
         }
+    }
+
+    /**
+     * Send notification to external application.
+     *
+     *@param {Object} props - Notification object.
+     * @returns {void}
+     */
+    notifyExternal(props = {}) {
+        this._sendEvent({
+            name: 'notification-raised',
+            props
+        });
     }
 }
 

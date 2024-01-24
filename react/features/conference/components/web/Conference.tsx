@@ -200,6 +200,15 @@ class Conference extends AbstractConference<IProps, any> {
     render() {
         const {
             _isAnyOverlayVisible,
+            // XXX The character casing of the name filmStripOnly utilized by
+            // interfaceConfig is obsolete but legacy support is required.
+            filmStripOnly: filmstripOnly,
+            hideToolbar: hideToolbar,
+            hideNotifications: hideNotifications,
+            hideChat: hideChat
+        } = interfaceConfig;
+
+        const {
             _layoutClassName,
             _notificationsVisible,
             _overflowDrawer,
@@ -211,11 +220,12 @@ class Conference extends AbstractConference<IProps, any> {
         return (
             <div
                 id = 'layout_wrapper'
+                onTouchStart={ this._onMouseMove }
                 onMouseEnter = { this._onMouseEnter }
                 onMouseLeave = { this._onMouseLeave }
                 onMouseMove = { this._onMouseMove }
                 ref = { this._setBackground }>
-                <Chat />
+                { !hideChat && (filmstripOnly || <Chat />)}
                 <div
                     className = { _layoutClassName }
                     id = 'videoconference_page'
@@ -235,7 +245,7 @@ class Conference extends AbstractConference<IProps, any> {
                         }
                     </div>
 
-                    { _showPrejoin || _showLobby || (
+                    { !hideToolbar && (_showPrejoin || _showLobby || 
                         <>
                             <span
                                 aria-level = { 1 }
@@ -343,7 +353,7 @@ class Conference extends AbstractConference<IProps, any> {
      * @private
      * @returns {void}
      */
-    _onMouseMove(event: React.MouseEvent) {
+    _onMouseMove(event: any) {
         APP.API.notifyMouseMove(event);
     }
 

@@ -9,7 +9,7 @@ import {
 } from '../base/conference/actionTypes';
 import { SET_CONFIG } from '../base/config/actionTypes';
 import { NOTIFY_CAMERA_ERROR, NOTIFY_MIC_ERROR } from '../base/devices/actionTypes';
-import { JitsiConferenceErrors } from '../base/lib-jitsi-meet';
+import { JitsiConferenceErrors, JitsiRecordingConstants } from '../base/lib-jitsi-meet';
 import {
     DOMINANT_SPEAKER_CHANGED,
     PARTICIPANT_JOINED,
@@ -28,6 +28,7 @@ import { getBaseUrl } from '../base/util/helpers';
 import { appendSuffix } from '../display-name/functions';
 import { SUBMIT_FEEDBACK_ERROR, SUBMIT_FEEDBACK_SUCCESS } from '../feedback/actionTypes';
 import { SET_FILMSTRIP_VISIBLE } from '../filmstrip/actionTypes';
+import { getActiveSession } from '../../features/recording/functions';
 
 import './subscriber';
 
@@ -105,6 +106,13 @@ MiddlewareRegistry.register(store => next => action => {
         const { room } = state['features/base/conference'];
         const { loadableAvatarUrl, name, id, email } = getLocalParticipant(state) ?? {};
         const breakoutRoom = APP.conference.roomName.toString() !== room?.toLowerCase();
+                const activeSession = getActiveSession(state, JitsiRecordingConstants.mode.FILE);
+        
+        const isRecordingOn = Boolean(activeSession);
+        const recordingStatusString = isRecordingOn ? 
+            activeSession?.status === JitsiRecordingConstants.status.ON ? "ON" : 
+                activeSession?.status === JitsiRecordingConstants.status.PENDING ? "PENDING" : "OFF" 
+            : "OFF";
 
         // we use APP.conference.roomName as we do not update state['features/base/conference'].room when
         // moving between rooms in case of breakout rooms and it stays always with the name of the main room
@@ -113,13 +121,14 @@ MiddlewareRegistry.register(store => next => action => {
             id,
             {
                 displayName: name,
+                email,
                 formattedDisplayName: appendSuffix(
                     name ?? '',
                     defaultLocalDisplayName
                 ),
                 avatarURL: loadableAvatarUrl,
                 breakoutRoom,
-                email
+                recordingStatus: recordingStatusString
             }
         );
         break;
@@ -142,7 +151,6 @@ MiddlewareRegistry.register(store => next => action => {
             { id: action.participant ? action.participant.getId() : undefined }
         );
         break;
-
     case NOTIFY_CAMERA_ERROR:
         if (action.error) {
             APP.API.notifyOnCameraError(

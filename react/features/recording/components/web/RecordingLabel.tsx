@@ -55,7 +55,8 @@ class RecordingLabel extends AbstractRecordingLabel {
                 position = { 'bottom' }>
                 <Label
                     className = { classes?.record }
-                    icon = { icon } />
+                    icon = { icon }
+                    text = 'REC' />
             </Tooltip>
         );
     }

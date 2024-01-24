@@ -9,7 +9,7 @@
  */
 
 var interfaceConfig = {
-    APP_NAME: 'Jitsi Meet',
+    APP_NAME: 'Job.com',
     AUDIO_LEVEL_PRIMARY_COLOR: 'rgba(255,255,255,0.4)',
     AUDIO_LEVEL_SECONDARY_COLOR: 'rgba(255,255,255,0.2)',
 
@@ -96,7 +96,7 @@ var interfaceConfig = {
     MAXIMUM_ZOOMING_COEFFICIENT: 1.3,
 
     /**
-     * Whether the mobile app Jitsi Meet is to be promoted to participants
+     * Whether the mobile app Job.com, is to be promoted to participants
      * attempting to join a conference in a mobile Web browser. If
      * {@code undefined}, defaults to {@code true}.
      *

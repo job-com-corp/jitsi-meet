@@ -31,7 +31,8 @@ import {
     TRACK_REMOVED,
     TRACK_STOPPED,
     TRACK_UPDATED,
-    TRACK_WILL_CREATE
+    TRACK_WILL_CREATE,
+    TRACK_RECEIVING_DATA_STATUS,
 } from './actionTypes';
 import {
     createLocalTracksF,
@@ -271,6 +272,25 @@ export function noDataFromSource(track: any) {
 }
 
 /**
+* Signals that the JitsiLocalTrack is receiving data or not.
+*
+* @param  {JitsiLocalTrack}  track
+* @param  {Boolean} isReceivingData
+* @returns {{
+*     type: TRACK_RECEIVING_DATA_STATUS,
+*     track: Track
+*     isReceivingData: boolean
+* }}
+*/
+export function receivingDataStatusFromSource(track: any, isReceivingData: boolean) {
+    return {
+        type: TRACK_RECEIVING_DATA_STATUS,
+        track,
+        isReceivingData
+    };
+}
+
+/**
  * Displays a no data from source video error if needed.
  *
  * @param {JitsiLocalTrack} jitsiTrack - The track.
@@ -405,6 +425,13 @@ export function trackAdded(track: any) {
             }
 
             isReceivingData = track.isReceivingData();
+            dispatch(receivingDataStatusFromSource(
+                {
+                    deviceId: track.deviceId,
+                    type: track.type
+                },
+                isReceivingData)
+            );
             track.on(JitsiTrackEvents.NO_DATA_FROM_SOURCE, () => dispatch(noDataFromSource({ jitsiTrack: track })));
             if (!isReceivingData) {
                 if (mediaType === MEDIA_TYPE.AUDIO) {

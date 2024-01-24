@@ -29,6 +29,24 @@ module:log("info", "Starting speakerstats for %s", muc_component_host);
 
 local main_muc_service;
 
+local api_protocol = module:get_option("api_protocol");
+local api_domain = module:get_option("api_domain");
+local api_path = module:get_option("api_path");
+local is_posting_enabled = true;
+
+-- Cannot proceed if "api_path" not configured
+if not api_path then
+    module:log("error", "Speaker stats api_path not specified. Posting of speaker stats is disabled.");
+    is_posting_enabled = false;
+end
+if not api_domain then
+    module:log("error", "Speaker stats api_domain not specified. Posting of speaker stats is disabled");
+    is_posting_enabled = false;
+end
+if not api_protocol then
+    api_protocol = "https";
+end
+
 local function is_admin(jid)
     return um_is_admin(jid, module.host);
 end
@@ -47,6 +65,24 @@ local function get_main_room(breakout_room)
             breakout_room.main_room = room;
             return room;
         end
+    end
+end
+
+local function getPostRequestUrl(roomjid)
+    if is_posting_enabled then
+        local pos = string.find(roomjid, '@');
+        if pos > 0 then
+            local roomname = string.sub(roomjid, 1, pos - 1);
+            if string.len(roomname) > 32 then
+                local tenant = string.sub(roomname, 33);
+                local requestURL = api_protocol..'://'..tenant..'.'..api_domain..api_path;
+                return requestURL;
+            end
+        else
+            return nil;
+        end
+    else
+        return nil;
     end
 end
 
@@ -238,7 +274,7 @@ function occupant_joined(event)
             for jid, values in pairs(room.speakerStats) do
                 -- skip reporting those without a nick('dominantSpeakerId')
                 -- and skip focus if sneaked into the table
-                if values and type(values) == 'table' and values.nick ~= nil and values.nick ~= 'focus' then
+                if values and type(values) == 'table' and values.nick ~= nil and values.nick ~= 'focus' and values.nick ~= 'recorder' then
                     local totalDominantSpeakerTime = values.totalDominantSpeakerTime;
                     local faceLandmarks = values.faceLandmarks;
                     if totalDominantSpeakerTime > 0 or room:get_occupant_jid(jid) == nil or values:isDominantSpeaker()
@@ -312,7 +348,9 @@ function room_destroyed(event)
         return;
     end
 
-    ext_events.speaker_stats(room, room.speakerStats);
+    local requestURL = getPostRequestUrl(room.jid);
+    module:log("info", "Request URL is %s", requestURL);
+    ext_events.speaker_stats(room, room.speakerStats, requestURL);
 end
 
 module:hook("message/host", on_message);

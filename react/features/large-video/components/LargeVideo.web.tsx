@@ -208,7 +208,7 @@ class LargeVideo extends Component<IProps> {
                 {_whiteboardReady && <Whiteboard />}
                 <div id = 'etherpad' />
 
-                <Watermarks />
+                {!interfaceConfig.hideWatermarks && <Watermarks />}
 
                 <div
                     id = 'dominantSpeaker'

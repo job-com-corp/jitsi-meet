@@ -55,10 +55,6 @@ const COMPONENTS: Array<{
         id: 'highlight-moment'
     },
     {
-        Component: SubjectText,
-        id: 'subject'
-    },
-    {
         Component: ConferenceTimer,
         id: 'conference-timer'
     },

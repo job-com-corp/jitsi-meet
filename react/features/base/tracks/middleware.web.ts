@@ -16,6 +16,7 @@ import {
     TRACK_MUTE_UNMUTE_FAILED,
     TRACK_NO_DATA_FROM_SOURCE,
     TRACK_OWNER_CHANGED,
+    TRACK_RECEIVING_DATA_STATUS,
     TRACK_REMOVED,
     TRACK_STOPPED,
     TRACK_UPDATED
@@ -42,6 +43,15 @@ import './middleware.any';
  */
 MiddlewareRegistry.register(store => next => action => {
     switch (action.type) {
+    case TRACK_RECEIVING_DATA_STATUS: {
+        if (typeof APP !== 'undefined') {
+            APP.API.notifyTrackReceivingStatus({
+                track: action.track,
+                isReceivingData: action.isReceivingData
+            });
+        }
+        break;
+    }
     case TRACK_ADDED: {
         const { local } = action.track;
 

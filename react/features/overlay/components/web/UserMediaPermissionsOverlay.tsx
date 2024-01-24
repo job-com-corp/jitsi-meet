@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import { IReduxState } from '../../../app/types';
 import { translate, translateToHTML } from '../../../base/i18n/functions';
+import { IconWarningCircle } from '../../../base/icons/svg';
 
 import AbstractUserMediaPermissionsOverlay, { abstractMapStateToProps }
     from './AbstractUserMediaPermissionsOverlay';
@@ -20,7 +21,7 @@ class UserMediaPermissionsOverlay extends AbstractUserMediaPermissionsOverlay {
      * @returns {ReactElement}
      */
     render() {
-        const { _premeetingBackground, browser, t } = this.props;
+        const { _premeetingBackground, browser, t, mediaOverlayTitle, mediaOverlayText } = this.props;
         const style = _premeetingBackground ? {
             background: _premeetingBackground,
             backgroundPosition: 'center',
@@ -28,8 +29,11 @@ class UserMediaPermissionsOverlay extends AbstractUserMediaPermissionsOverlay {
         } : {};
 
         return (
-            <OverlayFrame style = { style }>
+            <OverlayFrame
+                className = 'permissions-overlay'
+                style = { style }>
                 <div className = 'inlay'>
+                    <div className = 'inlay__warning_icon'><IconWarningCircle /></div>
                     <span className = 'inlay__icon icon-microphone' />
                     <span className = 'inlay__icon icon-camera' />
                     <h3
@@ -37,14 +41,14 @@ class UserMediaPermissionsOverlay extends AbstractUserMediaPermissionsOverlay {
                         className = 'inlay__title'
                         role = 'alert' >
                         {
-                            t('startupoverlay.genericTitle')
+                            mediaOverlayTitle ? mediaOverlayTitle : t('startupoverlay.genericTitle')
                         }
                     </h3>
                     <span
                         className = 'inlay__text'
                         role = 'alert' >
                         {
-                            translateToHTML(t,
+                            mediaOverlayText ? mediaOverlayText : translateToHTML(t,
                                 `userMedia.${browser}GrantPermissions`)
                         }
                     </span>
