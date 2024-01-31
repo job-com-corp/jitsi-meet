@@ -1,0 +1,23 @@
+name: Package and release Prosody plugins
+
+on: push
+
+jobs:
+  run-ci:
+    name: package and release
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 18
+
+    - name: Package prosody plugins
+      run: npm run zip-prosody-plugins
+
+    - name: Release and publish prosody plugins
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      with:
+        files: resources/prosody-plugins.zip
