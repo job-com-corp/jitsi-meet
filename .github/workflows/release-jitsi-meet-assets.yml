@@ -24,7 +24,7 @@ jobs:
     - run: make package-libs
 
     - name: Build and package Jitsi meet css
-    - run: make package-css
+      run: make package-css
 
     - name: Publish
       uses: softprops/action-gh-release@v1
