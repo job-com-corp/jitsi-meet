@@ -1,6 +1,8 @@
 name: Package and release Prosody plugins
 
-on: push
+on:
+  release:
+    types: [created]
 
 jobs:
   run-ci:
