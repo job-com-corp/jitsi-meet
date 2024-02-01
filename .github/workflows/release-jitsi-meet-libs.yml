@@ -1,13 +1,14 @@
-name: Package and release Prosody plugins
+name: Build and publish Jitsi meet libs
 
-on:
-  push:
-    tags:        
-      - 'jobcom*'
+on: push
+# on:
+#   push:
+#     tags:        
+#       - 'jobcom*'
 
 jobs:
   run-ci:
-    name: package and release jitsi meet libs
+    name: Build and publish
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
@@ -16,12 +17,12 @@ jobs:
       with:
         node-version: 16
 
-    - name: Build and package Jitsi meet libs folder
+    - name: Build and package
       run: npm install
     - run: make
     - run: npm run zip-jitsi-meet-libs
 
-    - name: Release and publish prosody plugins
+    - name: Publish
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       with:
