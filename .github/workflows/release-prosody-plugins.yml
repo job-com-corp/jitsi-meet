@@ -1,12 +1,13 @@
 name: Package and release Prosody plugins
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:        
+      - 'jobcom*'
 
 jobs:
   run-ci:
-    name: package and release
+    name: package and release Jitsi meet libs
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
