@@ -1,0 +1,37 @@
+name: Build and publish Jitsi meet assets
+
+on:
+  push:
+    tags:
+      - 'jobcom*'
+
+jobs:
+  run-ci:
+    name: Build and publish assets
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 16
+
+    - name: Package Prosody plugins
+      run: make package-prosody
+
+    - name: Build and package Jitsi meet libs
+      run: make build-libs
+    - run: make package-libs
+
+    - name: Build and package Jitsi meet css
+    - run: make package-css
+
+    - name: Publish
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
+      generate_release_notes: true
+      with:
+        files: |
+          resources/prosody-plugins.zip
+          jitsi-meet-libs.zip
+          jitsi-meet-libs.css

@@ -129,3 +129,19 @@ source-package:
 	cp css/all.css source_package/jitsi-meet/css && \
 	(cd source_package ; tar cjf ../jitsi-meet.tar.bz2 jitsi-meet) && \
 	rm -rf source_package
+
+package-prosody:
+	cd resources && zip -r prosody-plugins.zip prosody-plugins/
+
+npm-install:
+	npm ci
+
+build-libs: npm-install compile deploy
+
+zip-libs:
+	zip -r jitsi-meet-libs.zip libs/
+
+package-libs: build-libs zip-libs
+
+package-css:
+	zip -r jitsi-meet-css.zip css/all*
