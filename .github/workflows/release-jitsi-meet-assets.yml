@@ -29,8 +29,9 @@ jobs:
     - name: Publish
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
-      generate_release_notes: true
       with:
+        draft: true
+        generate_release_notes: true
         files: |
           resources/prosody-plugins.zip
           jitsi-meet-libs.zip
