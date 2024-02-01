@@ -5,6 +5,10 @@ on:
     tags:
       - 'jobcom*'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   run-ci:
     name: Build and publish assets
