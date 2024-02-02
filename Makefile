@@ -139,9 +139,12 @@ npm-install:
 build-libs: npm-install compile deploy
 
 zip-libs:
-	zip -r jitsi-meet-libs.zip libs/
+	zip -r jitsi-meet-libs.zip libs/external_api* libs/app.bundle*
 
 package-libs: build-libs zip-libs
 
 package-css:
 	zip -r jitsi-meet-css.zip css/all*
+
+package-web:
+	zip -r jitsi-meet-web.zip images/joblogo.png

@@ -29,6 +29,9 @@ jobs:
     - name: Build and package Jitsi meet css
       run: make package-css
 
+    - name: Build and package Jitsi meet web
+      run: make package-web
+
     - name: Publish
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
@@ -39,3 +42,4 @@ jobs:
           resources/prosody-plugins.zip
           jitsi-meet-libs.zip
           jitsi-meet-css.zip
+          jitsi-meet-web.zip
