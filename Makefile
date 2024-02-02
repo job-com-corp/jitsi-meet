@@ -147,4 +147,4 @@ package-css:
 	zip -r jitsi-meet-css.zip css/all*
 
 package-web:
-	zip -r jitsi-meet-web.zip images/joblogo.png
+	zip -r jitsi-meet-web.zip images/joblogo.png images/watermark.svg
