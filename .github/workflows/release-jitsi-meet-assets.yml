@@ -39,7 +39,7 @@ jobs:
         draft: true
         generate_release_notes: true
         files: |
-          resources/jitsi-meet-prosody-plugins.zip
+          jitsi-meet-prosody-plugins.zip
           jitsi-meet-libs.zip
           jitsi-meet-css.zip
           jitsi-meet-web.zip

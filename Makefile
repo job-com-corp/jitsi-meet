@@ -131,7 +131,7 @@ source-package:
 	rm -rf source_package
 
 package-prosody:
-	cd resources && zip -r jitsi-meet-prosody-plugins.zip prosody-plugins/
+	cd resources && zip -r ../jitsi-meet-prosody-plugins.zip prosody-plugins/
 
 npm-install:
 	npm ci
