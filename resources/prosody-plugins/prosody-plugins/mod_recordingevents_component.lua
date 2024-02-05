@@ -2,7 +2,7 @@
 --
 --  Example config:
 --
---    Component "sipevents.mydomain.com" "sipevents_component"
+--    Component "recordingevents.mydomain.com" "recordingevents_component"
 --        muc_component = "conference.mydomain.com"
 --
 --        api_domain = "dev-team.info"
@@ -158,46 +158,22 @@ function occupant_joined(event)
 
   local room = event.room;
   local occupant = event.occupant;
+  
   local occupant_node = jid.node(occupant.jid);
-  local occupant_jid = occupant.jid
-  if occupant_node == 'jigasi' then
-    local nick = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
+  if occupant_node == 'recorder' then
     local tenant = getTenantFromRoomName(room.jid);
-    local roomname = jid.node(room.jid);
-    local occupant_id = string.match(occupant_jid, "/(.*)")
-    if nick == 'Transcriber' then
-        local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/transcription-started/'..roomname;
-   
-        module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
-        
-        async_http_request(URL_EVENT_OCCUPANT_JOINED, {
-          headers = http_headers;
-          method = "POST";
-          body = json.encode({
-            ['event'] = 'Transcription-started';
-            ['user'] = nick;
-          })
-        })
-        module:log("info", "user - %s ", nick);
-    else
-        local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-join/'..roomname;
-        module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
+    local roomname = jid.node(room.jid);    
+    local URL_EVENT_OCCUPANT_JOINED = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/recording-started/'..roomname;
 
-        async_http_request(URL_EVENT_OCCUPANT_JOINED, {
-          headers = http_headers;
-          method = "POST";
-          body = json.encode({
-            ['event'] = 'sip-user-joined';
-            ['jitsiId'] = occupant_id;
-            ['phoneNum'] = nick;
-          })
-        })
+    module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_JOINED);
     
-        module:log("info", "phoneNum - %s", nick);
-        module:log("info", "jitsiId - %s", occupant_id);
-    end
+    async_http_request(URL_EVENT_OCCUPANT_JOINED, {
+      headers = http_headers;
+      method = "POST";
+    })
   end
 end
+
 --- Callback when an occupant has left room
 function occupant_left(event)
     local room = event.room;
@@ -208,30 +184,19 @@ function occupant_left(event)
 
     local room = event.room;
     local occupant = event.occupant;
+    
     local occupant_node = jid.node(occupant.jid);
-    if occupant_node == 'jigasi' then
-      local nick = occupant:get_presence():get_child_text('nick', 'http://jabber.org/protocol/nick');
+    if occupant_node == 'recorder' then
       local tenant = getTenantFromRoomName(room.jid);
       local roomname = jid.node(room.jid);
-      local occupant_jid = occupant.jid;
-      local occupant_id = string.match(occupant_jid, "/(.*)");
-      local URL_EVENT_OCCUPANT_LEFT = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/sip-user-left/'..roomname;
-      if nick ~= 'Transcriber' then
-        module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_LEFT);
+      local URL_EVENT_OCCUPANT_LEFT = api_protocol..'://'..tenant..'.'..api_domain..api_path..'/recording-stopped/'..roomname;
+      
+      module:log("info", "POST URL - %s", URL_EVENT_OCCUPANT_LEFT);
 
-        async_http_request(URL_EVENT_OCCUPANT_LEFT, {
-            headers = http_headers;
-            method = "POST";
-            body = json.encode({
-                ['event'] = 'sip-user-left';
-                ['jitsiId'] = occupant_id;
-                ['phoneNum'] = nick;
-            })
-        })
-        
-        module:log("info", "phoneNum - %s", nick);
-        module:log("info", "jitsiId - %s", occupant_id);
-       end
+      async_http_request(URL_EVENT_OCCUPANT_LEFT, {
+        headers = http_headers;
+        method = "POST";
+      })
     end
 end
 
@@ -243,7 +208,7 @@ function process_host(host)
 
         local muc_module = module:context(host);
         muc_module:hook("muc-occupant-joined", occupant_joined, -1);
-        muc_module:hook("muc-occupant-pre-leave", occupant_left, -1);
+        muc_module:hook("muc-occupant-left", occupant_left, -1);
     end
 end
 
