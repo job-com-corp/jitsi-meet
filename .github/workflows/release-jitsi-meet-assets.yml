@@ -3,7 +3,7 @@ name: Build and publish Jitsi meet assets
 on:
   push:
     tags:
-      - 'jobcom*'
+      - 'jobcom/*'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
