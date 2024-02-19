@@ -9,7 +9,6 @@ import HighlightButton from '../../../recording/components/Recording/web/Highlig
 import RecordingLabel from '../../../recording/components/web/RecordingLabel';
 import { showToolbox } from '../../../toolbox/actions.web';
 import { isToolboxVisible } from '../../../toolbox/functions.web';
-import TranscribingLabel from '../../../transcribing/components/TranscribingLabel.web';
 import VideoQualityLabel from '../../../video-quality/components/VideoQualityLabel.web';
 import VisitorsCountLabel from '../../../visitors/components/web/VisitorsCountLabel';
 import ConferenceTimer from '../ConferenceTimer';
@@ -78,10 +77,6 @@ const COMPONENTS: Array<{
     {
         Component: RaisedHandsCountLabel,
         id: 'raised-hands-count'
-    },
-    {
-        Component: TranscribingLabel,
-        id: 'transcribing'
     },
     {
         Component: VideoQualityLabel,

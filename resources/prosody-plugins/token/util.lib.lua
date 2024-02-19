@@ -220,7 +220,7 @@ function Util:process_and_verify_token(session, acceptedIssuers)
     local key;
     if session.public_key then
         -- We're using an public key stored in the session
-        module:log("debug","Public key was found on the session");
+        -- module:log("debug","Public key was found on the session");
         key = session.public_key;
     elseif self.asapKeyServer and session.auth_token ~= nil then
         -- We're fetching an public key from an ASAP server
@@ -283,6 +283,8 @@ function Util:process_and_verify_token(session, acceptedIssuers)
 
         -- Binds the user details to the session if available
         if claims["context"] ~= nil then
+          session.jitsi_meet_str_tenant = claims["context"]["tenant"];
+
           if claims["context"]["user"] ~= nil then
             session.jitsi_meet_context_user = claims["context"]["user"];
           end
@@ -396,7 +398,7 @@ function Util:verify_room(session, room_address)
             -- not a regex
             room_to_check = auth_room;
         end
-        module:log("debug", "room to check: %s", room_to_check)
+        -- module:log("debug", "room to check: %s", room_to_check)
         if not room_to_check then
             if not self.requireRoomClaim then
                 -- if we do not require to have the room claim, and it is missing
@@ -406,6 +408,14 @@ function Util:verify_room(session, room_address)
 
             return false;
         end
+    end
+
+    if session.jitsi_meet_str_tenant
+        and string.lower(session.jitsi_meet_str_tenant) ~= session.jitsi_web_query_prefix then
+        module:log('warn', 'Tenant differs for user:%s group:%s url_tenant:%s token_tenant:%s',
+            inspect(session.jitsi_meet_context_user), session.jitsi_meet_context_group,
+            session.jitsi_web_query_prefix, session.jitsi_meet_str_tenant);
+        session.jitsi_meet_tenant_mismatch = true;
     end
 
     local auth_domain = string.lower(session.jitsi_meet_domain);

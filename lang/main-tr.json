@@ -222,6 +222,7 @@
         "Share": "Paylaş",
         "Submit": "Gönder",
         "WaitForHostMsg": "Toplantısı henüz başlamadı. Toplantı sahibi sizseniz, lütfen kimlik doğrulaması yapın. Değilseniz lütfen toplantı sahibinin gelmesini bekleyin.",
+        "WaitingForHostButton": "Toplantı sahibini bekle",
         "WaitingForHostTitle": "Toplantı sahibi bekleniyor ...",
         "Yes": "Evet",
         "accessibilityLabel": {
@@ -1033,6 +1034,7 @@
         "neutral": "Nötr",
         "sad": "Üzgün",
         "search": "Ara",
+        "searchHint": "Katılımcıları ara",
         "seconds": "{{count}}sn",
         "speakerStats": "Konuşmacı İstatistikleri",
         "speakerTime": "Konuşmacı Süresi",

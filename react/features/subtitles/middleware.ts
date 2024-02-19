@@ -13,7 +13,6 @@ import {
     removeTranscriptMessage,
     updateTranscriptMessage
 } from './actions.any';
-import logger from './logger';
 
 /**
  * The type of json-message which indicates that json carries a
@@ -43,6 +42,12 @@ const P_NAME_TRANSLATION_LANGUAGE = 'translation_language';
 * Time after which the rendered subtitles will be removed.
 */
 const REMOVE_AFTER_MS = 3000;
+
+/**
+ * Stability factor for a trancription. We'll treat a transcript as stable
+ * beyond this value.
+ */
+const STABLE_TRANSCRIPTION_FACTOR = 0.85;
 
 /**
  * Middleware that catches actions related to transcript messages to be rendered
@@ -88,9 +93,7 @@ MiddlewareRegistry.register(store => next => action => {
 function _endpointMessageReceived({ dispatch, getState }: IStore, next: Function, action: AnyAction) {
     const { json } = action;
 
-    if (!(json
-            && (json.type === JSON_TYPE_TRANSCRIPTION_RESULT
-                || json.type === JSON_TYPE_TRANSLATION_RESULT))) {
+    if (![ JSON_TYPE_TRANSCRIPTION_RESULT, JSON_TYPE_TRANSLATION_RESULT ].includes(json?.type)) {
         return next(action);
     }
 
@@ -98,95 +101,100 @@ function _endpointMessageReceived({ dispatch, getState }: IStore, next: Function
     const language
         = state['features/base/conference'].conference
             ?.getLocalParticipantProperty(P_NAME_TRANSLATION_LANGUAGE);
+    const { skipInterimTranscriptions } = state['features/base/config'].testing ?? {};
 
-    try {
-        const transcriptMessageID = json.message_id;
-        const { name, id, avatar_url: avatarUrl } = json.participant;
-        const participant = {
-            avatarUrl,
-            id,
-            name
+    const transcriptMessageID = json.message_id;
+    const { name, id, avatar_url: avatarUrl } = json.participant;
+    const participant = {
+        avatarUrl,
+        id,
+        name
+    };
+
+    if (json.type === JSON_TYPE_TRANSLATION_RESULT && json.language === language) {
+        // Displays final results in the target language if translation is
+        // enabled.
+
+        const newTranscriptMessage = {
+            clearTimeOut: undefined,
+            final: json.text,
+            participant
         };
 
-        if (json.type === JSON_TYPE_TRANSLATION_RESULT
-                && json.language === language) {
-            // Displays final results in the target language if translation is
-            // enabled.
+        _setClearerOnTranscriptMessage(dispatch, transcriptMessageID, newTranscriptMessage);
+        dispatch(updateTranscriptMessage(transcriptMessageID, newTranscriptMessage));
+    } else if (json.type === JSON_TYPE_TRANSCRIPTION_RESULT) {
+        // Displays interim and final results without any translation if
+        // translations are disabled.
 
-            const newTranscriptMessage = {
-                clearTimeOut: undefined,
-                final: json.text,
-                participant
-            };
+        const { text } = json.transcript[0];
 
-            _setClearerOnTranscriptMessage(dispatch,
-                transcriptMessageID, newTranscriptMessage);
-            dispatch(updateTranscriptMessage(transcriptMessageID,
-                newTranscriptMessage));
+        // First, notify the external API.
+        if (typeof APP !== 'undefined' && !(json.is_interim && skipInterimTranscriptions)) {
+            const txt: any = {};
 
-        } else if (json.type === JSON_TYPE_TRANSCRIPTION_RESULT && json.language.slice(0, 2) === language) {
-            // Displays interim and final results without any translation if
-            // translations are disabled.
-
-            const { text } = json.transcript[0];
-
-            // We update the previous transcript message with the same
-            // message ID or adds a new transcript message if it does not
-            // exist in the map.
-            const existingMessage = state['features/subtitles']._transcriptMessages.get(transcriptMessageID);
-            const newTranscriptMessage: any = {
-                clearTimeOut: existingMessage?.clearTimeOut,
-                language,
-                participant
-            };
-
-            _setClearerOnTranscriptMessage(dispatch,
-                transcriptMessageID, newTranscriptMessage);
-
-            // If this is final result, update the state as a final result
-            // and start a count down to remove the subtitle from the state
             if (!json.is_interim) {
-                newTranscriptMessage.final = text;
-
-            } else if (json.stability > 0.85) {
-                // If the message has a high stability, we can update the
-                // stable field of the state and remove the previously
-                // unstable results
-                newTranscriptMessage.stable = text;
-
+                txt.final = text;
+            } else if (json.stability > STABLE_TRANSCRIPTION_FACTOR) {
+                txt.stable = text;
             } else {
-                // Otherwise, this result has an unstable result, which we
-                // add to the state. The unstable result will be appended
-                // after the stable part.
-                newTranscriptMessage.unstable = text;
+                txt.unstable = text;
             }
 
-            dispatch(updateTranscriptMessage(transcriptMessageID, newTranscriptMessage));
+            const conferenceTime = getConferenceTimestamp(APP.store.getState());
 
-            // Notify the external API too.
-            if (typeof APP !== 'undefined') {
-                const sanitizedTranscriptMessage = { ...newTranscriptMessage };
-
-                delete sanitizedTranscriptMessage.clearTimeOut;
-
-                const conferenceTime = getConferenceTimestamp(APP.store.getState());
-
-                APP.API.notifyTranscriptionChunkReceived({
-                    id: transcriptMessageID,
-                    timestamp: conferenceTime ? new Date().getTime() - conferenceTime : undefined,
-                    message: {
-                        ...sanitizedTranscriptMessage,
-                        participant: json.participant
-                    }
-                });
-            }
-            dispatch(
-                updateTranscriptMessage(
-                    transcriptMessageID,
-                    newTranscriptMessage));
+            APP.API.notifyTranscriptionChunkReceived({
+                messageID: transcriptMessageID,
+                language: json.language,
+                participant,
+                ...txt,
+                id: transcriptMessageID,
+                timestamp: conferenceTime ? new Date().getTime() - conferenceTime : undefined,
+                message: {
+                    ...txt,
+                    participant: json.participant
+                }
+            });
         }
-    } catch (error) {
-        logger.error('Error occurred while updating transcriptions\n', error);
+
+        // If the suer is not requesting transcriptions just bail.
+        if (json.language.slice(0, 2) !== language) {
+            return next(action);
+        }
+
+        if (json.is_interim && skipInterimTranscriptions) {
+            return next(action);
+        }
+
+        // We update the previous transcript message with the same
+        // message ID or adds a new transcript message if it does not
+        // exist in the map.
+        const existingMessage = state['features/subtitles']._transcriptMessages.get(transcriptMessageID);
+        const newTranscriptMessage: any = {
+            clearTimeOut: existingMessage?.clearTimeOut,
+            language,
+            participant
+        };
+
+        _setClearerOnTranscriptMessage(dispatch, transcriptMessageID, newTranscriptMessage);
+
+        // If this is final result, update the state as a final result
+        // and start a count down to remove the subtitle from the state
+        if (!json.is_interim) {
+            newTranscriptMessage.final = text;
+        } else if (json.stability > STABLE_TRANSCRIPTION_FACTOR) {
+            // If the message has a high stability, we can update the
+            // stable field of the state and remove the previously
+            // unstable results
+            newTranscriptMessage.stable = text;
+        } else {
+            // Otherwise, this result has an unstable result, which we
+            // add to the state. The unstable result will be appended
+            // after the stable part.
+            newTranscriptMessage.unstable = text;
+        }
+
+        dispatch(updateTranscriptMessage(transcriptMessageID, newTranscriptMessage));
     }
 
     return next(action);

@@ -84,6 +84,9 @@ var config = {
         // issues related to insertable streams.
         // disableE2EE: false,
 
+        // Enables supports for AV1 codec.
+        // enableAv1: false,
+
         // Enables XMPP WebSocket (as opposed to BOSH) for the given amount of users.
         // mobileXmppWsThreshold: 10, // enable XMPP WebSockets on mobile for 10% of the users
 
@@ -97,6 +100,9 @@ var config = {
         // Disables the auto-play behavior of *all* newly created video element.
         // This is useful when the client runs on a host with limited resources.
         // noAutoPlayVideo: false,
+
+        // Experiment: Whether to skip interim transcriptions.
+        // skipInterimTranscriptions: false,
     },
 
     // Disables moderator indicators.
@@ -318,6 +324,13 @@ var config = {
     //          'https://jitsi-meet.example.com/subfolder/static/oauth.html',
     // },
 
+    // configuration for all things recording related. Existing settings will be migrated here in the future.
+    // recordings: {
+    //    // If true, shows a notification at the start of the meeting with a call to action button
+    //    // to start recording (for users who can do so).
+    //    // suggestRecording: true,
+    // },
+
     // recordingService: {
     //     // When integrations like dropbox are enabled only that will be shown,
     //     // by enabling fileRecordingsServiceEnabled, we show both the integrations
@@ -406,9 +419,6 @@ var config = {
     //     // Available languages can be found in
     //     // ./src/react/features/transcribing/transcriber-langs.json.
     //     preferredLanguage: 'en-US',
-
-    //     // Disable start transcription for all participants.
-    //     disableStartForAll: false,
 
     //     // Enables automatic turning on transcribing when recording is started
     //     autoTranscribeOnRecord: false,
@@ -1191,9 +1201,17 @@ var config = {
     // https://firebase.google.com/docs/dynamic-links/create-manually
     // deeplinking: {
     //
-    //     // The desktop deeplinking config.
+    //     // The desktop deeplinking config, disabled by default.
     //     desktop: {
-    //         appName: 'Jitsi Meet'
+    //         appName: 'Jitsi Meet',
+    //         appScheme: 'jitsi-meet,
+    //         download: {
+    //             linux:
+    //               'https://github.com/jitsi/jitsi-meet-electron/releases/latest/download/jitsi-meet-x86_64.AppImage',
+    //             macos: 'https://github.com/jitsi/jitsi-meet-electron/releases/latest/download/jitsi-meet.dmg',
+    //             windows: 'https://github.com/jitsi/jitsi-meet-electron/releases/latest/download/jitsi-meet.exe'
+    //         },
+    //         enabled: false
     //     },
     //     // If true, any checks to handoff to another application will be prevented
     //     // and instead the app will continue to display in the current browser.
@@ -1296,9 +1314,6 @@ var config = {
     // If set to true all muting operations of remote participants will be disabled.
     // disableRemoteMute: true,
 
-    // Enables support for lip-sync for this client (if the browser supports it).
-    // enableLipSync: false,
-
     /**
      External API url used to receive branding specific information.
      If there is no url set or there are missing fields, the defaults are applied.
@@ -1392,9 +1407,6 @@ var config = {
     // Only the default ones from will be available.
     // disableAddingBackgroundImages: false,
 
-    // Disables using screensharing as virtual background.
-    // disableScreensharingVirtualBackground: false,
-
     // Sets the background transparency level. '0' is fully transparent, '1' is opaque.
     // backgroundAlpha: 1,
 
@@ -1421,7 +1433,6 @@ var config = {
     //         'conference-timer',
     //         'participants-count',
     //         'e2ee',
-    //         'transcribing',
     //         'video-quality',
     //         'insecure-room',
     //         'highlight-moment',

@@ -12,6 +12,7 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { setPermanentProperty } from '../../../analytics/actions';
 import { appNavigate } from '../../../app/actions.native';
 import { IReduxState } from '../../../app/types';
 import { setAudioOnly } from '../../../base/audio-only/actions';
@@ -112,9 +113,14 @@ const Prejoin: React.FC<IPrejoinProps> = ({ navigation }: IPrejoinProps) => {
     useEffect(() => {
         BackHandler.addEventListener('hardwareBackPress', goBack);
 
+        dispatch(setPermanentProperty({
+            wasPrejoinDisplayed: true
+        }));
+
         return () => BackHandler.removeEventListener('hardwareBackPress', goBack);
 
-    }, []);
+    }, []); // dispatch is not in the dependancy list because we want the action to be dispatched only once when
+    // the component is mounted.
 
     const headerLeft = () => {
         if (Platform.OS === 'ios') {
@@ -161,7 +167,7 @@ const Prejoin: React.FC<IPrejoinProps> = ({ navigation }: IPrejoinProps) => {
             <BrandingImageBackground />
             {
                 isFocused
-                && <View style = { largeVideoContainerStyles }>
+                && <View style = { largeVideoContainerStyles as StyleProp<ViewStyle> }>
                     <View style = { styles.displayRoomNameBackdrop as StyleProp<TextStyle> }>
                         <Text
                             numberOfLines = { 1 }
