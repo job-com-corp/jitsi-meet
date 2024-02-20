@@ -148,12 +148,7 @@ function _endpointMessageReceived({ dispatch, getState }: IStore, next: Function
                 language: json.language,
                 participant,
                 ...txt,
-                id: transcriptMessageID,
-                timestamp: conferenceTime ? new Date().getTime() - conferenceTime : undefined,
-                message: {
-                    ...txt,
-                    participant: json.participant
-                }
+                timestamp: conferenceTime ? new Date().getTime() - conferenceTime : undefined
             });
         }
 
