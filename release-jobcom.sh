@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-version=jobcom-2.0.9164
+version=jobcom-2.0.9258
 timestamp=$(date +%Y%m%d)
 git_tag="${version}-${timestamp}"
 echo "New git tag: $git_tag"
