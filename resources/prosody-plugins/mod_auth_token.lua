@@ -104,12 +104,10 @@ function provider.get_sasl_handler(session)
                 end
             end
         else
-            self.username = session.jitsi_meet_context_user.id .. "-" .. message;
+		self.username = session.jitsi_meet_context_user.id .. "-" .. message;
         end
 
         local post_event_result = prosody.events.fire_event("post-jitsi-authentication", session);
-        if post_event_result ~= nil and post_event_result.res == false then
-            module:log("warn",
                 "Error verifying token on post authentication stage :%s, reason:%s", post_event_result.error, post_event_result.reason);
             session.auth_token = nil;
             return post_event_result.res, post_event_result.error, post_event_result.reason;

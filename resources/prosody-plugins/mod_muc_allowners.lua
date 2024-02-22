@@ -14,8 +14,7 @@ local MUC_NS = 'http://jabber.org/protocol/muc';
 local disable_revoke_owners;
 
 local function load_config()
-    disable_revoke_owners = module:get_option_boolean("allowners_disable_revoke_owners", true);
-    module:log('info', 'REVOKE_OWNERS SET TO : ', disable_revoke_owners);
+    disable_revoke_owners = module:get_option_boolean("allowners_disable_revoke_owners", false);
 end
 load_config();
 
