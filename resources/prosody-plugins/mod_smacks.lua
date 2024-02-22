@@ -331,7 +331,7 @@ module:hook_stanza("http://etherx.jabber.org/streams", "features",
 		end);
 
 function handle_enabled(session, stanza, xmlns_sm)
-	module:log("info", "SMACKS Enabling stream management");
+	module:log("debug", "Enabling stream management");
 	session.smacks = xmlns_sm;
 
 	wrap_session_in(session, false);
@@ -345,10 +345,10 @@ module:hook_stanza(xmlns_sm3, "enabled", function (session, stanza) return handl
 
 function handle_r(origin, stanza, xmlns_sm)
 	if not origin.smacks then
-		module:log("info", " SMACKS Received ack request from non-smack-enabled session");
+		module:log("debug", "Received ack request from non-smack-enabled session");
 		return;
 	end
-	module:log("info", " SMACKS Received ack request, acking for %d", origin.handled_stanza_count);
+	module:log("debug", "Received ack request, acking for %d", origin.handled_stanza_count);
 	-- Reply with <a>
 	(origin.sends2s or origin.send)(st.stanza("a", { xmlns = xmlns_sm, h = string.format("%d", origin.handled_stanza_count) }));
 	-- piggyback our own ack request if needed (see request_ack_if_needed() for explanation of last_requested_h)
@@ -479,20 +479,20 @@ module:hook("pre-resource-unbind", function (event)
 				handle_unacked_stanzas(session);
 			end
 		else
-			session.log("info", "mod_smacks hibernating session for up to %d seconds", resume_timeout);
+			session.log("debug", "mod_smacks hibernating session for up to %d seconds", resume_timeout);
 			local hibernate_time = os_time(); -- Track the time we went into hibernation
 			session.hibernating = hibernate_time;
 			local resumption_token = session.resumption_token;
 			module:fire_event("smacks-hibernation-start", {origin = session, queue = session.outgoing_stanza_queue});
 			timer.add_task(resume_timeout, function ()
-				session.log("info", "mod_smacks hibernation timeout reached...");
+				session.log("debug", "mod_smacks hibernation timeout reached...");
 				-- We need to check the current resumption token for this resource
 				-- matches the smacks session this timer is for in case it changed
 				-- (for example, the client may have bound a new resource and
 				-- started a new smacks session, or not be using smacks)
 				local curr_session = full_sessions[session.full_jid];
 				if session.destroyed then
-					session.log("info", "The session has already been destroyed");
+					session.log("debug", "The session has already been destroyed");
 				elseif curr_session and curr_session.resumption_token == resumption_token
 				-- Check the hibernate time still matches what we think it is,
 				-- otherwise the session resumed and re-hibernated.
@@ -503,14 +503,14 @@ module:hook("pre-resource-unbind", function (event)
 					local current_time = os_time();
 					local timeout_start = math_max(session.hibernating, session.first_hibernated_push or session.hibernating);
 					if session.push_identifier ~= nil and not session.first_hibernated_push then
-						session.log("info", "No push happened since hibernation started, hibernating session for up to %d extra seconds", resume_timeout);
+						session.log("debug", "No push happened since hibernation started, hibernating session for up to %d extra seconds", resume_timeout);
 						return resume_timeout;
 					end
 					if session.push_identifier ~= nil and current_time-timeout_start < resume_timeout then
-						session.log("info", "A push happened since hibernation started, hibernating session for up to %d extra seconds", resume_timeout-(current_time-timeout_start));
+						session.log("debug", "A push happened since hibernation started, hibernating session for up to %d extra seconds", resume_timeout-(current_time-timeout_start));
 						return resume_timeout-(current_time-timeout_start);		-- time left to wait
 					end
-					session.log("info", "Destroying session for hibernating too long");
+					session.log("debug", "Destroying session for hibernating too long");
 					session_registry.set(session.username, session.resumption_token, nil);
 					-- save only actual h value and username/host (for security)
 					old_session_registry.set(session.username, session.resumption_token, {
@@ -521,7 +521,7 @@ module:hook("pre-resource-unbind", function (event)
 					session.resumption_token = nil;
 					sessionmanager.destroy_session(session);
 				else
-					session.log("info", "*SMACKS GOOD* Session resumed before hibernation timeout, all is well")
+					session.log("debug", "Session resumed before hibernation timeout, all is well")
 				end
 			end);
 			return true; -- Postpone destruction for now
