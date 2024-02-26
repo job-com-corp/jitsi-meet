@@ -25,18 +25,18 @@ jobs:
 
     - uses: actions/checkout@v4
 
-    # - uses: actions/setup-node@v4
-    #   with:
-    #     node-version: 16
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 16
 
-    # - name: Package Prosody plugins
-    #   run: make package-prosody
+    - name: Package Prosody plugins
+      run: make package-prosody
 
-    # - name: Build and package Jitsi meet libs
-    #   run: make package-libs
+    - name: Build and package Jitsi meet libs
+      run: make package-libs
 
-    # - name: Build and package Jitsi meet css
-    #   run: make package-css
+    - name: Build and package Jitsi meet css
+      run: make package-css
 
     - name: Build and package Jitsi meet web
       run: make package-web
