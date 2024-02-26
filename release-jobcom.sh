@@ -4,7 +4,7 @@ echo "Run $0 -stable for stable release (without timestamp)"
 arg=$1
 
 # Check release-jitsi-meet-assets.yml workflow for version regex
-version_internal=3.8.0
+version_internal=3.test
 version_jitsi=2.0.9258
 version=jobcom-${version_jitsi}-${version_internal}
 timestamp=$(date +%Y%m%d%H%M)
