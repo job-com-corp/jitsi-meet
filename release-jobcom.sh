@@ -3,7 +3,7 @@
 echo "Run $0 -stable for stable release (without timestamp)"
 arg=$1
 
-version_internal=3.8.0
+version_internal=3.12.0
 version_jitsi=2.0.9258
 
 # Check release-jitsi-meet-assets.yml workflow for version/tag regex
