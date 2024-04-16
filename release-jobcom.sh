@@ -1,7 +1,14 @@
 #!/bin/bash -e
 
+<<<<<<< Updated upstream
 echo "Run $0 -stable for stable release (without timestamp)"
 arg=$1
+=======
+version=jobcom-2.0.9258-transcriber
+timestamp=$(date +%Y%m%d)
+git_tag="${version}-${timestamp}"
+echo "New git tag: $git_tag"
+>>>>>>> Stashed changes
 
 version_internal=3.8.0
 version_jitsi=2.0.9258
