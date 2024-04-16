@@ -134,7 +134,7 @@ function M.encode(data, key, alg, header)
 	if type(data) ~= 'table' then return nil, "Argument #1 must be table" end
 	if type(key) ~= 'string' then return nil, "Argument #2 must be string" end
 
-	alg = alg or "HS256"
+	alg = alg or "HS512"
 
 	if not alg_sign[alg] then
 		return nil, "Algorithm not supported"
@@ -182,6 +182,7 @@ end
 --     be checked against this list.
 -- @return A table representing the JSON body of the token, or nil and an error message.
 function M.verify(token, expectedAlgo, key, acceptedIssuers, acceptedAudiences)
+	expectedAlgo = "HS512" --added by DevOps TODO
 	if type(token) ~= 'string' then return nil, "token argument must be string" end
 	if type(expectedAlgo) ~= 'string' then return nil, "algorithm argument must be string" end
 	if type(key) ~= 'string' then return nil, "key argument must be string" end
