@@ -44,12 +44,14 @@ MiddlewareRegistry.register(({ dispatch, getState }) => next => action => {
     switch (action.type) {
     case _TRANSCRIBER_JOINED:
         notifyTranscribingStatusChanged(true);
-        maybeEmitRecordingNotification(dispatch, getState, true);
+
+        // maybeEmitRecordingNotification(dispatch, getState, true);
 
         break;
     case _TRANSCRIBER_LEFT:
         notifyTranscribingStatusChanged(false);
-        maybeEmitRecordingNotification(dispatch, getState, false);
+
+        // maybeEmitRecordingNotification(dispatch, getState, false);
 
         break;
     case HIDDEN_PARTICIPANT_JOINED:
