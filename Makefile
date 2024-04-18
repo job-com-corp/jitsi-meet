@@ -139,7 +139,7 @@ npm-install:
 build-libs: npm-install compile deploy
 
 zip-libs:
-	zip -r jitsi-meet-libs.zip libs/external_api* libs/app.bundle*
+	zip -r jitsi-meet-libs.zip libs/external_api* libs/app.bundle* libs/lib-jitsi-meet.min*
 
 package-libs: build-libs zip-libs
 
